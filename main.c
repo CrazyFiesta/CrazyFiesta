@@ -32,8 +32,10 @@ int main()
     FILE *usuarioFiesta;
     struct usuario u;
     struct fiesta f;
-    struct usuariofiesta uf,k;
+    struct fiesta fie;
+    struct usuariofiesta uf,uparty;
     int opcion;
+
 
     //registro de usuario
     strcpy(u.nombre, "juan");
@@ -47,24 +49,34 @@ int main()
     //fclose(usuarios);
 
     //registro de una fiesta
-    strcpy(f.descripcion, "fiesta del trigo");
-    strcpy(f.nombre, "fiesta del trigo");
-    strcpy(f.fechainicio, "18/01/14");
-    strcpy(f.fechafin, "18/02/14");
-    f.idfiesta= 1;
+    //strcpy(f.descripcion, "fiesta del trigo");
+    //strcpy(f.nombre, "fiesta del trigo");
+    //strcpy(f.fechainicio, "18/01/14");
+    //strcpy(f.fechafin, "18/02/14");
+    //f.idfiesta= 1;
     //fiestas = fopen ("fiestas", "wb");
     //fwrite(&f,sizeof(struct fiesta),1,fiestas);
+
+    //otra fiesta
+    //strcpy(fie.descripcion, "fiesta carnaval");
+    //strcpy(fie.nombre, "fiesta con mucha comida");
+    //strcpy(fie.fechainicio, "18/09/14");
+    //strcpy(fie.fechafin, "18/11/14");
+    //fie.idfiesta= 2;
+    //fwrite(&fie,sizeof(struct fiesta),1,fiestas);
     //fclose(fiestas);
 
     //registro de USUARIOFIESTA
-   // usuarioFiesta = fopen ("usuarioFiesta", "wb");
-    uf.idfiesta=1;
-    strcpy(uf.mail,u.mail);
+    //usuarioFiesta = fopen ("usuarioFiesta", "wb");
+   // uf.idfiesta=1;
+    //strcpy(uf.mail,u.mail);
+    //uparty.idfiesta=2;
+    //strcpy(uparty.mail,u.mail);
     //fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    //fread(&k,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    //fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
     //printf("%d", k.idfiesta);
     //printf("%s", k.mail);
-    //fclose(usuarioFiesta);
+    fclose(usuarioFiesta);
     opcion= 4;
     while (opcion !=0){
 
@@ -144,8 +156,8 @@ void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta usu;
     struct fiesta fies;
+    fread(&usu,sizeof(struct usuariofiesta),1,usuarioFiesta);
     while (!feof(usuarioFiesta)){
-      fread(&usu,sizeof(struct usuariofiesta),1,usuarioFiesta);
       if (strcmp (u.mail,usu.mail)== 0 ){
         rewind(fiestas);
         fread(&fies,sizeof(struct fiesta),1,fiestas);
@@ -156,6 +168,7 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
         fread(&fies,sizeof(struct fiesta),1,fiestas);
       }
     }
+    fread(&usu,sizeof(struct usuariofiesta),1,usuarioFiesta);
 }
 }
 
