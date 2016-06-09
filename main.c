@@ -117,6 +117,7 @@ int verificarMail (char mail[], FILE *usuarios);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
 void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
+void registrarUsuario(struct usuario, FILE *usuarios, FILE *usuarioFiesta);
 
 void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta uf3,uf4;
