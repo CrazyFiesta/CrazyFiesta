@@ -72,7 +72,8 @@ int main()
     printf("######################################\n");
     printf(" 1.- Registrar un usuario\n");
     printf(" 2.- Listado de Fiestas\n");
-    printf(" 3.- Modificar contraseña\n");
+    printf(" 3.- Modificar contraseÃ±a\n");
+    printf(" 4.- Listado de Usuarios\n");
     printf(" 0.- Salir\n");;
     scanf ("%d", &opcion);
     switch(opcion){
@@ -96,6 +97,14 @@ int main()
             modificarContrasena (u,usuarios);
             fclose(usuarios);
             break;
+            
+        case 4:
+            usuarioFiesta = fopen("usuarioFiesta", "rb");
+            fiestas = fopen("fiestas","rb");
+            listadoUsuarios(u,usuarioFiesta,fiestas);
+            fclose(usuarioFiesta);
+            fclose(fiestas);
+            break;
     }
 }
     return 0;
@@ -107,7 +116,30 @@ void mostrarFiestas(struct fiesta f);
 int verificarMail (char mail[], FILE *usuarios);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
+void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
 
+void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
+    struct usuariofiesta uf3,uf4;
+    int pertenece,aux;
+    pertenece = 1;
+    printf("Ingrese el id de la fiesta de la que quiere obtener los usuarios: \n");
+    scanf("%d",&aux);
+    while (!feof(usuarioFiesta)){
+        fread(&uf3,sizeof(struct usuariofiesta),1,usuarioFiesta);
+        if ((uf3.idfiesta == aux) && ((strcmp(uf3.mail,u.mail))==0)){
+                  pertenece=0;
+        }}
+    if (pertenece==1){
+        printf("Usted no es administrador de esta fiesta y no puede ver el listado \n");
+    }
+    else if (pertenece==0) {
+        rewind(usuarioFiesta);
+        while (!feof(usuarioFiesta)){
+            fread(&uf4,sizeof(struct usuariofiesta),1,usuarioFiesta);
+            if (uf4.idfiesta == aux){
+            printf("\n Mail: %s \n", uf4.mail);
+    }}}}
+    
 
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta usu;
@@ -146,7 +178,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
         if (verificarMail(usu.mail,usuarios)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
-            printf("ingrese contraseña: ");
+            printf("ingrese contraseÃ±a: ");
             scanf("%s", &usu.contrasena);
             printf("ingrese nombre: ");
             scanf("%s", &usu.nombre);
@@ -193,12 +225,12 @@ int verificarMail (char mail[], FILE *usuarios){
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
-    printf("escriba la contraseña actual:");
+    printf("escriba la contraseÃ±a actual:");
     scanf("%s",&contra);
     if (verificadorContrasena(contra,usuarios,u)==0){
-        printf("escriba la nueva contraseña");
+        printf("escriba la nueva contraseÃ±a");
         scanf("%s", &contra);
-        printf ("vuelva a escribir la nueva contraseña");
+        printf ("vuelva a escribir la nueva contraseÃ±a");
         scanf("%s", &contraV);
         if (strcmp(contra,contraV)== 0){
             strcpy(u.contrasena,contra);
@@ -238,6 +270,6 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
     if (con==0){
         fseek(usuarios,-128,SEEK_CUR);
         fwrite(&u, sizeof(struct usuario), 1, usuarios);
-        printf ("esta es la contraseña nueva: %s", u.contrasena);
+        printf ("esta es la contraseÃ±a nueva: %s", u.contrasena);
     }
 }
