@@ -84,8 +84,9 @@ int main()
     printf("######################################\n");
     printf(" 1.- Registrar un usuario\n");
     printf(" 2.- Listado de Fiestas\n");
-    printf(" 3.- Modificar contraseña\n");
+    printf(" 3.- Modificar contraseÃ±a\n");
     printf(" 4.- Listado de Usuarios\n");
+    printf(" 5.- Dar de baja un usuario\n");
     printf(" 0.- Salir\n");;
     scanf ("%d", &opcion);
     switch(opcion){
@@ -116,11 +117,16 @@ int main()
             fclose(usuarioFiesta);
             fclose(fiestas);
             break;
+        case 5:
+            usuarios = fopen("usuarios","rb");
+            usuarioFiesta = fopen("usuarioFiesta","rb+");
+            dardebaja(u,usuarios,usuarioFiesta);
     }
 }
     return 0;
 }
 
+void dardebaja(struct usuario,FILE *usuarios,FILE *usuarioFiesta);
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *Fiestas);
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta);
 void mostrarFiestas(struct fiesta f);
@@ -128,6 +134,68 @@ int verificarMail (char mail[], FILE *usuarios);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
+
+void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta){
+struct usuario us;
+struct usuariofiesta uf;
+char mail[30];
+char aux[]="administrador";
+int esven = 0,coinc=0,idfaux,i;
+
+printf("Ingrese el mail del usuario que quiere dar de baja: \n");
+scanf("%s",mail);
+fflush(stdin);
+
+fread(&us,sizeof(struct usuario),1,usuarios);
+while (!feof(usuarios)){
+    if ((strcmp(us.mail,mail))==0){
+        if ((strcmp(us.tipousuario,aux))==0){
+         esven = 1;
+        }
+    }
+    fread(&us,sizeof(struct usuario),1,usuarios);
+}
+
+if (esven == 1){
+    printf("El usuario que ha ingresado es administrador y no puede darle de baja \n");
+}
+
+else {
+    printf("Ingrese el id de la fiesta de la que quiere dar de baja al usuario: \n");
+    scanf("%d",&idfaux);
+    fflush(stdin);
+    printf("Ingrese su mail:\n");
+    scanf("%s",mail2);
+
+    rewind(usuarios);
+    fread(&us,sizeof(struct usuario),1,usuarios);
+    while (!feof(usuarios)){
+        if ((strcmp(us.mail,mail2))==0){
+            if ((strcmp(us.tipousuario,aux))==0){
+                esadm=1;
+                }
+        }
+    fread(&us,sizeof(struct usuario),1,usuarios);
+    }
+    if (esadm==0){
+        printf("Usted no es un usuario administrador y no puede dar de baja un usuario\n");
+    }
+    else {
+    rewind(usuarioFiesta);
+    fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    while (!feof(usuarioFiesta)){
+              if((uf.idfiesta==idfaux) && (uf.mail==mail)){
+                uf.idfiesta = 0;
+                fseek(usuarioFiesta,-1*sizeof(struct usuariofiesta),SEEK_CUR);
+                fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+                printf("La baja de usuario se ha realizado correctamente \n");
+                break;
+              }
+                fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+
+    }
+
+}}}
 
 void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta uf3,uf4;
@@ -192,7 +260,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
         if (verificarMail(usu.mail,usuarios)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
-            printf("ingrese contraseña: ");
+            printf("ingrese contraseÃ±a: ");
             scanf("%s", &usu.contrasena);
             printf("ingrese nombre: ");
             scanf("%s", &usu.nombre);
@@ -241,19 +309,19 @@ int verificarMail (char mail[], FILE *usuarios){
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
-    printf("escriba la contraseña actual:");
+    printf("escriba la contraseÃ±a actual:");
     scanf("%s",&contra);
     if (verificadorContrasena(contra,usuarios,u)==0){
-        printf("escriba la nueva contraseña:");
+        printf("escriba la nueva contraseÃ±a:");
         scanf("%s", &contra);
-        printf ("vuelva a escribir la nueva contraseña:");
+        printf ("vuelva a escribir la nueva contraseÃ±a:");
         scanf("%s", &contraV);
         if (strcmp(contra,contraV)== 0){
             strcpy(u.contrasena,contra);
             cambiarContrasena(u,usuarios);
         }
     }
-    else printf("la contraseña que escribio no es la actual vuelva a intentarlo\n\n");
+    else printf("la contraseÃ±a que escribio no es la actual vuelva a intentarlo\n\n");
 }
 
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u){
@@ -281,7 +349,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
         if (strcmp(usu.mail,u.mail)==0){
             fseek(usuarios,-128,SEEK_CUR);
             fwrite(&u, sizeof(struct usuario), 1, usuarios);
-            printf ("esta es la contraseña nueva: %s\n", u.contrasena);
+            printf ("esta es la contraseÃ±a nueva: %s\n", u.contrasena);
             break;
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
