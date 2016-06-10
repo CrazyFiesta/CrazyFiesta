@@ -171,7 +171,7 @@ struct usuariofiesta uf;
 char mail[30];
 char mail2[30];
 char aux[]="administrador";
-int esven = 0,esadm = 0, coinc=0,idfaux;
+int esven = 0,esadm = 0, coinc=0,idfaux,exis=0;
 
 printf("Ingrese el mail del usuario que quiere dar de baja: \n");
 scanf("%s",mail);
@@ -183,10 +183,14 @@ while (!feof(usuarios)){
         if ((strcmp(us.tipousuario,aux))==0){
          esven = 1;
         }
+      exis=1; 
     }
     fread(&us,sizeof(struct usuario),1,usuarios);
 }
-
+if (exis==0){
+    printf("El mail ingresado no se encuentra registrado en el sistema");
+}
+else {
 if (esven == 1){
     printf("El usuario que ha ingresado es administrador y no puede darle de baja \n");
 }
@@ -227,7 +231,7 @@ else {
 
     }
 
-}}}
+}}}}
 
 
 void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta){
