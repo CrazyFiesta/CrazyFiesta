@@ -236,6 +236,8 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     int idf;
     int x;
     char marca [21];
+    int aux;
+    aux=0;
     strcpy(marca,"(FIESTA ELIMINADA)");
     //if (EsAdministrador(u, usuarios)==1){
         printf("Ingrese el ID de la fiesta que desea dar de baja: ");
@@ -244,9 +246,10 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         while(!feof(fiestas)){
                 if(fie.idfiesta==idf){
-                printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
-                printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
-                scanf("%s", &x);
+                    aux=1;
+                    printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
+                    printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
+                    scanf("%d", &x);
                     if (x==1){
                             fie.idfiesta= -1*fie.idfiesta;
                             strcpy(fie.descripcion,strcat(fie.descripcion,  marca));
@@ -261,7 +264,9 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                }
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         }
-        printf("La fiesta no existe \n");
+        if(aux==0){
+            printf("La fiesta no existe\n");
+        }
 }
     //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
    // }
@@ -465,7 +470,9 @@ char descripcion[300];
 char fechainicio[15];
 char fechafin[15];
 int x;
+int aux;
 int opcion;
+aux=0;
 //if es administrador...//
 printf("Ingrese el ID de la fiesta que desea modificar: ");
 scanf("%d", &idf);
@@ -473,6 +480,7 @@ rewind(fiestas);
 fread(&fie, sizeof(struct fiesta),1, fiestas);
 while(!feof(fiestas)){
     if(fie.idfiesta==idf){
+        aux=1;
         printf("El nombre de la fiesta que desea modificar es %s.\n", fie.nombre);
         printf("Seguro que desea modificar esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar\n");
         scanf("%d", &x);
@@ -546,8 +554,10 @@ while(!feof(fiestas)){
     }
     fread(&fie, sizeof(struct fiesta),1, fiestas);
 }
+if(aux==0){
+    printf("La fiesta no existe");
+}
 
 return;
 }
-
 
