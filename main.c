@@ -186,7 +186,7 @@ else {
     rewind(usuarioFiesta);
     fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     while (!feof(usuarioFiesta)){
-              if((uf.idfiesta==idfaux) && (uf.mail==mail)){
+              if ((uf.idfiesta==idfaux) && (strcmp(uf.mail,mail)==0)){
                 uf.idfiesta = 0-1*uf.idfiesta;
                 fseek(usuarioFiesta,-1*sizeof(struct usuariofiesta),SEEK_CUR);
                 fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
