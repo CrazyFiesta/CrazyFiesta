@@ -141,7 +141,7 @@ struct usuariofiesta uf;
 char mail[30];
 char mail2[30];
 char aux[]="administrador";
-int esven = 0,coinc=0,idfaux;
+int esven = 0,esadm = 0, coinc=0,idfaux;
 
 printf("Ingrese el mail del usuario que quiere dar de baja: \n");
 scanf("%s",mail);
@@ -186,7 +186,7 @@ else {
     fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     while (!feof(usuarioFiesta)){
               if((uf.idfiesta==idfaux) && (uf.mail==mail)){
-                uf.idfiesta = 0;
+                uf.idfiesta = 0-1*uf.idfiesta;
                 fseek(usuarioFiesta,-1*sizeof(struct usuariofiesta),SEEK_CUR);
                 fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
                 printf("La baja de usuario se ha realizado correctamente \n");
