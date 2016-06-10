@@ -121,6 +121,7 @@ int main()
             usuarios = fopen("usuarios","rb");
             usuarioFiesta = fopen("usuarioFiesta","rb+");
             dardebaja(u,usuarios,usuarioFiesta);
+            break;
     }
 }
     return 0;
