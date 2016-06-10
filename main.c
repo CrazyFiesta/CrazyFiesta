@@ -140,7 +140,7 @@ struct usuario us;
 struct usuariofiesta uf;
 char mail[30];
 char aux[]="administrador";
-int esven = 0,coinc=0,idfaux,i;
+int esven = 0,coinc=0,idfaux;
 
 printf("Ingrese el mail del usuario que quiere dar de baja: \n");
 scanf("%s",mail);
