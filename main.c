@@ -139,6 +139,7 @@ void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta){
 struct usuario us;
 struct usuariofiesta uf;
 char mail[30];
+char mail2[30];
 char aux[]="administrador";
 int esven = 0,coinc=0,idfaux;
 
