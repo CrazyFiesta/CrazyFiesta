@@ -237,7 +237,7 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     int x;
     char marca [21];
     strcpy(marca,"(FIESTA ELIMINADA)");
-    if (EsAdministrador(u, usuarios)==1){
+    //if (EsAdministrador(u, usuarios)==1){
         printf("Ingrese el ID de la fiesta que desea dar de baja: ");
         scanf("%d", &idf);
         rewind(fiestas);
@@ -247,7 +247,7 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                 printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
                 printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
                 scanf("%s", &x);
-                    if (x=1){
+                    if (x==1){
                             fie.idfiesta= -1*fie.idfiesta;
                             strcpy(fie.descripcion,strcat(fie.descripcion,  marca));
                             fseek(fiestas,-1*sizeof(struct fiesta),SEEK_CUR);
@@ -263,8 +263,8 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
         }
         printf("La fiesta no existe \n");
 }
-    else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
-    }
+    //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
+   // }
 
 int EsAdministrador(struct usuario u, FILE *usuarios){
 if(strcmp(u.tipousuario, "administrador")==0){
@@ -476,7 +476,7 @@ while(!feof(fiestas)){
         printf("El nombre de la fiesta que desea modificar es %s.\n", fie.nombre);
         printf("Seguro que desea modificar esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar\n");
         scanf("%d", &x);
-        if(x=1){
+        if(x==1){
             opcion=4;
             while(opcion !=0){
                 printf("           Modificar Fiesta           \n");
@@ -505,7 +505,7 @@ while(!feof(fiestas)){
                     printf("          Modificar fecha inicio           \n");
                     printf("______________________________________________\n");
                     printf("Ingrese la nueva fecha de inicio en formato dd/mm/aa: \n");
-                    scanf("%s", fechainicio);
+                    scanf("%s", &fechainicio);
                     strcpy(fie.fechainicio, fechainicio);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
