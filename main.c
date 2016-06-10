@@ -25,58 +25,70 @@ struct usuariofiesta{
 	};
 
 
-int main()
+int main(int argc,char* argv[])
 {
     FILE *usuarios;
     FILE *fiestas;
     FILE *usuarioFiesta;
+    FILE *IDactualFiesta;
     struct usuario u;
     struct fiesta f;
     struct fiesta fie;
     struct usuariofiesta uf,uparty;
     int opcion;
-    int contadordeID;
-    contadordeID= 2;
+
+    char t[15];
+    time_t tiempo = time(0);
+    struct tm *tlocal = localtime(&tiempo);
+    char output[15];
+    strftime(output,15,"%d/%m/%y",tlocal);
+    strcpy(t,output);
 
 
-   /* //registro de usuario
+    //idactual creando
+    //IDactualFiesta= fopen("idfiestas","wb");
+    //int contadordeID= 3;
+    //fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
+    //3fclose(IDactualFiesta);
+
+    //registro de usuario
     strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
     strcpy(u.apellido, "fernandez");
     strcpy(u.tipousuario, "administrador");
     strcpy(u.contrasena, "juan");
     u.dni= 40254875;
-    usuarios = fopen("usuarios","wb");
-    fwrite(&u,sizeof(struct usuario),1,usuarios);
-    fclose(usuarios);
+    //usuarios = fopen("usuarios","wb");
+    //fwrite(&u,sizeof(struct usuario),1,usuarios);
+    //fclose(usuarios);
 
     //registro de una fiesta
-    strcpy(f.descripcion, "fiesta del trigo");
-    strcpy(f.nombre, "fiesta del trigo");
-    strcpy(f.fechainicio, "18/01/14");
-    strcpy(f.fechafin, "18/02/14");
-    f.idfiesta= 1;
-    fiestas = fopen ("fiestas", "wb");
-    fwrite(&f,sizeof(struct fiesta),1,fiestas);
+    //strcpy(f.descripcion, "fiesta del trigo");
+    //strcpy(f.nombre, "fiesta del trigo");
+    //strcpy(f.fechainicio, "18/01/14");
+    //strcpy(f.fechafin, "18/02/14");
+    //f.idfiesta= 1;
+    //fiestas = fopen ("fiestas", "wb");
+    //fwrite(&f,sizeof(struct fiesta),1,fiestas);
 
     //otra fiesta
-    strcpy(fie.descripcion, "fiesta carnaval");
-    strcpy(fie.nombre, "fiesta con mucha comida");
-    strcpy(fie.fechainicio, "18/09/14");
-    strcpy(fie.fechafin, "18/11/14");
-    fie.idfiesta= 2;
-    fwrite(&fie,sizeof(struct fiesta),1,fiestas);
-    fclose(fiestas);
+    //strcpy(fie.descripcion, "fiesta carnaval");
+    //strcpy(fie.nombre, "fiesta con mucha comida");
+    //strcpy(fie.fechainicio, "18/09/14");
+    //strcpy(fie.fechafin, "18/11/14");
+    //fie.idfiesta= 2;
+    //fwrite(&fie,sizeof(struct fiesta),1,fiestas);
+    //fclose(fiestas);
 
     //registro de USUARIOFIESTA
-    usuarioFiesta = fopen ("usuarioFiesta", "wb");
-    uf.idfiesta=1;
-    strcpy(uf.mail,u.mail);
-    uparty.idfiesta=2;
-    strcpy(uparty.mail,u.mail);
-    fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    fclose(usuarioFiesta);*/
+    //usuarioFiesta = fopen ("usuarioFiesta", "wb");
+    //uf.idfiesta=1;
+    //strcpy(uf.mail,u.mail);
+    //uparty.idfiesta=2;
+    //strcpy(uparty.mail,u.mail);
+    //fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    //fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    //fclose(usuarioFiesta);
     opcion= 4;
     while (opcion !=0){
 
@@ -128,7 +140,9 @@ int main()
         case 6:
             fiestas = fopen ("fiestas","rb+");
             usuarioFiesta = fopen("usuarioFiesta", "rb+");
-            contadordeID = AltaFiesta(contadordeID, fiestas,usuarioFiesta,u);
+            IDactualFiesta= fopen("idfiestas","rb+");
+            AltaFiesta(IDactualFiesta, fiestas,usuarioFiesta,u);
+            fclose(IDactualFiesta);
             fclose(fiestas);
             fclose(usuarioFiesta);
             break;
@@ -136,16 +150,15 @@ int main()
             fiestas = fopen("fiestas", "rb+");
             usuarios = fopen("usuarios", "rb");
             usuarioFiesta = fopen("usuarioFiesta", "rb+");
-            BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta);
+            BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta,t);
             fclose(fiestas);
             fclose(usuarios);
             fclose(usuarioFiesta);
             break;
         case 8:
             fiestas = fopen("fiestas", "rb+");
-            ModificarFiesta(f, fiestas, usuarioFiesta);
+            ModificarFiesta(f, fiestas);
             fclose(fiestas);
-            fclose(usuarioFiesta);
             break;
     }
 }
@@ -159,11 +172,113 @@ int verificarMail (char mail[], FILE *usuarios);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
-int AltaFiesta (int contadordeID,FILE *fiestas,FILE *usuarioFiesta, struct usuario u);
-void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta);
+void AltaFiesta (FILE* IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u);
+void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, char tiempo[]);
 int EsAdministrador(struct usuario u, FILE *usuarios);
 void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta);
-void ModificarFiesta(struct fiesta f, FILE *fiestas,FILE *usuarioFiesta);
+int fiestaActiva(char tiempo[],int idf,FILE *fiestas);
+void ModificarFiesta(struct fiesta f, FILE *fiestas);
+
+void ModificarFiesta(struct fiesta f, FILE *fiestas){
+struct fiesta fie;
+int idf;
+char nombre[100];
+char descripcion[300];
+char fechainicio[15];
+char fechafin[15];
+int x;
+int aux;
+aux=0;
+int opcion;
+//if es administrador...//
+printf("Ingrese el ID de la fiesta que desea modificar: ");
+scanf("%d", &idf);
+rewind(fiestas);
+opcion=4;
+fread(&fie, sizeof(struct fiesta),1, fiestas);
+while(!feof(fiestas)){
+    if(fie.idfiesta==idf){
+        aux=1;
+        printf("El nombre de la fiesta que desea modificar es %s.\n", fie.nombre);
+        printf("Seguro que desea modificar esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar\n");
+        scanf("%d", &x);
+        if(x==1){
+            while(opcion !=0){
+                printf("           Modificar Fiesta           \n");
+                printf("__________________________________________\n");
+                printf(" 1.- Modificar nombre\n");
+                printf(" 2.- Modificar fecha inicio\n");
+                printf(" 3.- Modificar fecha fin\n");
+                printf(" 4.- Modificar descripcion\n");
+                printf(" 0.- Salir\n");
+                scanf("%d", &opcion);
+                switch(opcion){
+                case 0:
+                    return ;
+
+                 case 1:
+                     printf("        Modificar nombre           \n");
+                     printf("________________________________________\n");
+                     printf("Ingrese el nuevo nombre de la fiesta: \n");
+                     fflush(stdin);
+                     gets(nombre);
+                     strcpy(fie.nombre, nombre);
+                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
+                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
+                     printf("La modificacion del nombre se ha realizado correctamente.\n");
+
+                     break;
+
+                 case 2:
+                    printf("          Modificar fecha inicio           \n");
+                    printf("______________________________________________\n");
+                    printf("Ingrese la nueva fecha de inicio en formato dd/mm/aa: \n");
+                    scanf("%s", fechainicio);
+                    strcpy(fie.fechainicio, fechainicio);
+                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
+                    fwrite(&fie, sizeof(struct fiesta),1, fiestas);
+                    printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
+
+                    break;
+
+                 case 3:
+                    printf("         Modificar fecha fin               \n");
+                    printf("______________________________________________\n");
+                    printf("Ingrese la nueva fecha de fin en formato dd/mm/aa: \n");
+                    scanf("%s", &fechafin);
+                    strcpy(fie.fechafin, fechafin);
+                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
+                    fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
+                    printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
+
+                    break;
+
+                 case 4:
+                    printf("         Modificar descripcion              \n");
+                    printf("_______________________________________________\n");
+                    printf("Ingrese la nueva descripcion: \n");
+                    fflush(stdin);
+                    gets(descripcion);
+                    strcpy(fie.descripcion, descripcion);
+                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
+                    fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
+                    printf("La modificacion de la descripcion se ha realizado correctamente.\n");
+
+                    break;
+                    }
+
+            }
+        }
+        else return;
+    }
+    fread(&fie, sizeof(struct fiesta),1, fiestas);
+}
+if(aux==0){
+    printf("La fiesta no existe");
+}
+
+return;
+}
 
 void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta){
 struct usuario us;
@@ -171,7 +286,7 @@ struct usuariofiesta uf;
 char mail[30];
 char mail2[30];
 char aux[]="administrador";
-int esven = 0,esadm = 0, coinc=0,idfaux,exis=0;
+int esven = 0,esadm = 0, coinc=0,idfaux;
 
 printf("Ingrese el mail del usuario que quiere dar de baja: \n");
 scanf("%s",mail);
@@ -183,14 +298,10 @@ while (!feof(usuarios)){
         if ((strcmp(us.tipousuario,aux))==0){
          esven = 1;
         }
-      exis=1; 
     }
     fread(&us,sizeof(struct usuario),1,usuarios);
 }
-if (exis==0){
-    printf("El mail ingresado no se encuentra registrado en el sistema");
-}
-else {
+
 if (esven == 1){
     printf("El usuario que ha ingresado es administrador y no puede darle de baja \n");
 }
@@ -230,31 +341,37 @@ else {
                 fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
 
     }
+    rewind(usuarioFiesta);
+    fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    while (!feof(usuarioFiesta)){
+        printf("%d %s \n",uf.idfiesta,uf.mail);
+            fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
 
-}}}}
+    }
+}}}
 
-
-void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta){
+void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, char tiempo[]){
     struct fiesta fie;
     struct usuariofiesta uf,uf1;
     int idf;
     int x;
-    char marca [21];
     int aux;
     aux=0;
+    char marca [21];
     strcpy(marca,"(FIESTA ELIMINADA)");
     //if (EsAdministrador(u, usuarios)==1){
         printf("Ingrese el ID de la fiesta que desea dar de baja: ");
         scanf("%d", &idf);
+        if (fiestaActiva(tiempo,idf,fiestas)==0){
         rewind(fiestas);
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         while(!feof(fiestas)){
                 if(fie.idfiesta==idf){
-                    aux=1;
-                    printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
-                    printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
-                    scanf("%d", &x);
-                    if (x==1){
+                aux=1;
+                printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
+                printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
+                scanf("%d", &x);
+                    if (x == 1){
                             fie.idfiesta= -1*fie.idfiesta;
                             strcpy(fie.descripcion,strcat(fie.descripcion,  marca));
                             fseek(fiestas,-1*sizeof(struct fiesta),SEEK_CUR);
@@ -268,12 +385,27 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                }
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         }
-        if(aux==0){
-            printf("La fiesta no existe\n");
+        if (aux==0){
+            printf("La fiesta no existe \n");
         }
 }
+    else printf("La fiesta todavia sigue activa \n");
+    }
     //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
-   // }
+    //}
+
+int fiestaActiva(char tiempo[],int idf,FILE *fiestas){
+    struct fiesta fie;
+    fread(&fie, sizeof(struct fiesta), 1, fiestas);
+    while (!feof(fiestas)){
+        if (fie.idfiesta== idf){
+            if (strcmp(tiempo,fie.fechafin)==1)
+                return 1;
+        }
+    fread(&fie, sizeof(struct fiesta), 1, fiestas);
+    }
+    return 0;
+ }
 
 int EsAdministrador(struct usuario u, FILE *usuarios){
 if(strcmp(u.tipousuario, "administrador")==0){
@@ -283,9 +415,10 @@ else
         return 0;
 }
 
-int AltaFiesta (int contadordeID,FILE *fiestas,FILE *usuarioFiesta, struct usuario u){
+void AltaFiesta (FILE *IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u){
     struct fiesta f;
     struct usuariofiesta uf;
+    int con;
     printf("Escriba el nombre de la fiesta: ");
     fflush(stdin);
     gets(f.nombre);
@@ -296,15 +429,17 @@ int AltaFiesta (int contadordeID,FILE *fiestas,FILE *usuarioFiesta, struct usuar
     printf("Ingrese una breve descripcion de la fiesta: ");
     fflush(stdin);
     gets(f.descripcion);
-    contadordeID= contadordeID+1;
-    f.idfiesta=  contadordeID;
+    fread(&con,sizeof(int),1,IDactualFiesta);
+    con= con+1;
+    fseek(IDactualFiesta,-1*sizeof(int),SEEK_CUR);
+    fwrite(&con,sizeof (int),1,IDactualFiesta);
+    f.idfiesta=  con;
     uf.idfiesta= f.idfiesta;
     strcpy(uf.mail, u.mail);
     fseek(fiestas, 0,SEEK_END);
     fseek(usuarioFiesta,0,SEEK_END);
     fwrite(&f,sizeof(struct fiesta),1, fiestas);
     fwrite(&uf,sizeof(struct usuariofiesta),1, usuarioFiesta);
-    return contadordeID;
 }
 
 void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
@@ -330,13 +465,12 @@ void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
             fread(&uf4,sizeof(struct usuariofiesta),1,usuarioFiesta);
     }}}
 
-
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta usu;
     struct fiesta fies;
     fread(&usu,sizeof(struct usuariofiesta),1,usuarioFiesta);
     while (!feof(usuarioFiesta)){
-      //if (strcmp (u.mail,usu.mail)== 0 ){
+      if (strcmp (u.mail,usu.mail)== 0 ){
         rewind(fiestas);
         fread(&fies,sizeof(struct fiesta),1,fiestas);
         while ( !feof(fiestas)){
@@ -344,18 +478,18 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
                 mostrarFiestas(fies);
         //}
         fread(&fies,sizeof(struct fiesta),1,fiestas);
-      //}
+      }
     }
     fread(&usu,sizeof(struct usuariofiesta),1,usuarioFiesta);
 }
 }
 
 void mostrarFiestas(struct fiesta f){
-    printf("fechainicio: %s", f.fechainicio);
-    printf("\nfechafin: %s", f.fechafin);
-    printf("\nidfiesta: %d", f.idfiesta);
-    printf("\ndescripcion: %s", f.descripcion);
-    printf("\nnombre: %s\n\n", f.nombre);
+    printf("fechainicio %s", f.fechainicio);
+    printf("\nfechafin %s", f.fechafin);
+    printf("\nidfiesta %d", f.idfiesta);
+    printf("\ndescripcion %s", f.descripcion);
+    printf("\nnombre %s\n\n", f.nombre);
 }
 
 void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
@@ -364,7 +498,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
     int idf;
     printf("ingrese una id de una fiesta que quiera dar de alta al usuario: ");
     scanf("%d", &idf);
-    //if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
+    if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
         printf("ingrese mail: ");
         scanf("%s", &usu.mail);
         if (verificarMail(usu.mail,usuarios)== 0){
@@ -387,8 +521,8 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
     }
     else {printf("error email en uso\n");}
     }
-//    else printf("error usted no tiene permisos para esa fiesta\n");
-//}
+    else printf("error usted no tiene permisos para esa fiesta\n");
+}
 
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta){
 
@@ -415,7 +549,6 @@ int verificarMail (char mail[], FILE *usuarios){
     }
     return 0;
 }
-
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
@@ -449,8 +582,6 @@ int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u){
        return 1;
 }
 
-
-
 void cambiarContrasena(struct usuario u, FILE *usuarios){
     struct usuario usu;
     rewind(usuarios);
@@ -465,103 +596,3 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
        fread(&usu,sizeof(struct usuario),1,usuarios);
     }
 }
-
-void ModificarFiesta(struct fiesta f, FILE *fiestas,FILE *usuarioFiesta){
-struct fiesta fie;
-int idf;
-char nombre[100];
-char descripcion[300];
-char fechainicio[15];
-char fechafin[15];
-int x;
-int aux;
-int opcion;
-aux=0;
-//if es administrador...//
-printf("Ingrese el ID de la fiesta que desea modificar: ");
-scanf("%d", &idf);
-rewind(fiestas);
-fread(&fie, sizeof(struct fiesta),1, fiestas);
-while(!feof(fiestas)){
-    if(fie.idfiesta==idf){
-        aux=1;
-        printf("El nombre de la fiesta que desea modificar es %s.\n", fie.nombre);
-        printf("Seguro que desea modificar esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar\n");
-        scanf("%d", &x);
-        if(x==1){
-            opcion=4;
-            while(opcion !=0){
-                printf("           Modificar Fiesta           \n");
-                printf("__________________________________________\n");
-                printf(" 1.- Modificar nombre\n");
-                printf(" 2.- Modificar fecha inicio\n");
-                printf(" 3.- Modificar fecha fin\n");
-                printf(" 4.- Modificar descripcion\n");
-                printf(" 0.- Salir\n");
-                scanf("%d", &opcion);
-                switch(opcion){
-                 case 1:
-                     printf("        Modificar nombre           \n");
-                     printf("________________________________________\n");
-                     printf("Ingrese el nuevo nombre de la fiesta: \n");
-                     fflush(stdin);
-                     gets(nombre);
-                     strcpy(fie.nombre, nombre);
-                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
-                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
-                     printf("La modificacion del nombre se ha realizado correctamente.\n");
-
-                     break;
-
-                 case 2:
-                    printf("          Modificar fecha inicio           \n");
-                    printf("______________________________________________\n");
-                    printf("Ingrese la nueva fecha de inicio en formato dd/mm/aa: \n");
-                    scanf("%s", &fechainicio);
-                    strcpy(fie.fechainicio, fechainicio);
-                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
-                    fwrite(&fie, sizeof(struct fiesta),1, fiestas);
-                    printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
-
-                    break;
-
-                 case 3:
-                    printf("         Modificar fecha fin               \n");
-                    printf("______________________________________________\n");
-                    printf("Ingrese la nueva fecha de fin en formato dd/mm/aa: \n");
-                    scanf("%s", &fechafin);
-                    strcpy(fie.fechafin, fechafin);
-                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
-                    fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
-                    printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
-
-                    break;
-
-                 case 4:
-                    printf("         Modificar descripcion              \n");
-                    printf("_______________________________________________\n");
-                    printf("Ingrese la nueva descripcion: \n");
-                    fflush(stdin);
-                    gets(descripcion);
-                    strcpy(fie.descripcion, descripcion);
-                    fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
-                    fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
-                    printf("La modificacion de la descripcion se ha realizado correctamente.\n");
-
-                    break;
-
-                    }
-
-            }
-        }
-        else return;
-    }
-    fread(&fie, sizeof(struct fiesta),1, fiestas);
-}
-if(aux==0){
-    printf("La fiesta no existe");
-}
-
-return;
-}
-
