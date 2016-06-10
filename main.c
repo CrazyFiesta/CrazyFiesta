@@ -76,7 +76,7 @@ int main()
     //fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
     //printf("%d", k.idfiesta);
     //printf("%s", k.mail);
-    fclose(usuarioFiesta);
+    //fclose(usuarioFiesta);
     opcion= 4;
     while (opcion !=0){
 
