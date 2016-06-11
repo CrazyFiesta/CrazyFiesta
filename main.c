@@ -493,9 +493,9 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
         rewind(fiestas);
         fread(&fies,sizeof(struct fiesta),1,fiestas);
         while ( !feof(fiestas)){
-            //if (fies.idfiesta==usu.idfiesta){
+           if (fies.idfiesta==usu.idfiesta){
                 mostrarFiestas(fies);
-        //}
+        }
         fread(&fies,sizeof(struct fiesta),1,fiestas);
       }
     }
