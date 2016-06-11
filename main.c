@@ -180,6 +180,7 @@ int EsAdministrador(struct usuario u, FILE *usuarios);
 void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta);
 int fiestaActiva(char tiempo[],int idf,FILE *fiestas);
 void ModificarFiesta(struct fiesta f, FILE *fiestas);
+void SetColor(int);
 
 void ModificarFiesta(struct fiesta f, FILE *fiestas){
 struct fiesta fie;
@@ -592,4 +593,21 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
     }
+}
+
+void SetColor(int ForgC)
+ {
+ WORD wColor;
+
+  HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+  CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+                       //We use csbi for the wAttributes word.
+ if(GetConsoleScreenBufferInfo(hStdOut, &csbi))
+ {
+                 //Mask out all but the background attribute, and add in the forgournd color
+      wColor = (csbi.wAttributes & 0xF0) + (ForgC & 0x0F);
+      SetConsoleTextAttribute(hStdOut, wColor);
+ }
+ return;
 }
