@@ -203,7 +203,9 @@ while(!feof(fiestas)){
     if(fie.idfiesta==idf){
         aux=1;
         printf("El nombre de la fiesta que desea modificar es %s.\n", fie.nombre);
+        SetColor(14);
         printf("Seguro que desea modificar esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar\n");
+        SetColor(15);
         scanf("%d", &x);
         if(x==1){
             while(opcion !=0){
@@ -277,7 +279,9 @@ while(!feof(fiestas)){
     fread(&fie, sizeof(struct fiesta),1, fiestas);
 }
 if(aux==0){
+    SetColor(4);
     printf("La fiesta no existe");
+    SetColor(15);
 }
 
 return;
@@ -306,7 +310,9 @@ while (!feof(usuarios)){
 }
 
 if (esven == 1){
+    SetColor(4);
     printf("El usuario que ha ingresado es administrador y no puede darle de baja \n");
+    SetColor(15);
 }
 
 else {
@@ -327,7 +333,9 @@ else {
     fread(&us,sizeof(struct usuario),1,usuarios);
     }
     if (esadm==0){
+    	SetColor(4);
         printf("Usted no es un usuario administrador y no puede dar de baja un usuario\n");
+        SetColor(15);
     }
     else {
     rewind(usuarioFiesta);
@@ -367,7 +375,9 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                 if(fie.idfiesta==idf){
                 aux=1;
                 printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
+                SetColor(14);
                 printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
+                SetColor(15);
                 scanf("%d", &x);
                     if (x == 1){
                             fie.idfiesta= -1*fie.idfiesta;
@@ -384,11 +394,16 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         }
         if (aux==0){
+        	SetColor(4);
             printf("La fiesta no existe \n");
+            SetColor(15);
         }
 }
-    else printf("La fiesta todavia sigue activa \n");
-    }
+    else {
+    	SetColor(14);
+    	printf("La fiesta todavia sigue activa \n");
+    	SetColor(15);
+    }}
     //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
     //}
 
@@ -452,7 +467,9 @@ void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
                   pertenece=0;
         }}
     if (pertenece==1){
+    	SetColor(4);
         printf("Usted no es administrador de esta fiesta y no puede ver el listado \n");
+        SetColor(15);
     }
     else if (pertenece==0) {
         rewind(usuarioFiesta);
@@ -517,9 +534,17 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
             fwrite(&usu, sizeof(struct usuario), 1, usuarios);
             fwrite(&uf, sizeof(struct usuariofiesta), 1, usuarioFiesta);
     }
-    else {printf("error email en uso\n");}
+    else {
+    	SetColor(4);
+    	printf("Error, email en uso\n");
+    	SetColor(15);
     }
-    else printf("error usted no tiene permisos para esa fiesta\n");
+    }
+    else {
+    	SetColor(4);
+    	printf("Error, usted no tiene permisos para esa fiesta\n");
+    	SetColor(15);
+    }
 }
 
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta){
@@ -550,20 +575,23 @@ int verificarMail (char mail[], FILE *usuarios){
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
-    printf("escriba la contraseña actual:");
+    printf("Escriba la contraseña actual:");
     scanf("%s",&contra);
     if (verificadorContrasena(contra,usuarios,u)==0){
-        printf("escriba la nueva contraseña:");
+        printf("Escriba la nueva contraseña:");
         scanf("%s", &contra);
-        printf ("vuelva a escribir la nueva contraseña:");
+        printf ("Vuelva a escribir la nueva contraseña:");
         scanf("%s", &contraV);
         if (strcmp(contra,contraV)== 0){
             strcpy(u.contrasena,contra);
             cambiarContrasena(u,usuarios);
         }
     }
-    else printf("la contraseña que escribio no es la actual vuelva a intentarlo\n\n");
-}
+    else {
+    	SetColor(4);
+    	printf("La contraseña que escribio no es la actual vuelva a intentarlo\n\n");
+    	SetColor(15);
+}}
 
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u){
     struct usuario usu;
@@ -588,7 +616,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
         if (strcmp(usu.mail,u.mail)==0){
             fseek(usuarios,-128,SEEK_CUR);
             fwrite(&u, sizeof(struct usuario), 1, usuarios);
-            printf ("esta es la contraseña nueva: %s\n", u.contrasena);
+            printf ("Esta es la contraseña nueva: %s\n", u.contrasena);
             break;
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
