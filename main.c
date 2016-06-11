@@ -95,7 +95,9 @@ int main(int argc,char* argv[])
     while (opcion !=0){
 
     printf("         CrazyFiesta            \n");
+    SetColor(3);
     printf("######################################\n");
+    SetColor(15);
     printf(" 1.- Registrar un usuario\n");
     printf(" 2.- Listado de Fiestas\n");
     printf(" 3.- Modificar contraseña\n");
@@ -104,7 +106,7 @@ int main(int argc,char* argv[])
     printf(" 6.- Dar de Alta Fiesta\n");
     printf(" 7.- Dar de Baja Fiesta\n");
     printf(" 8.- Modificar Fiesta\n");
-    printf(" 0.- Salir\n");;
+    printf(" 0.- Salir\n");
     scanf ("%d", &opcion);
     switch(opcion){
         case 1:
