@@ -45,11 +45,11 @@ int main(int argc,char* argv[])
     strcpy(t,output);
 
 
-    //idactual creando
-    //IDactualFiesta= fopen("idfiestas","wb");
-    //int contadordeID= 3;
-    //fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
-    //3fclose(IDactualFiesta);
+   /* //idactual creando
+    IDactualFiesta= fopen("idfiestas","wb");
+    int contadordeID= 3;
+    fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
+    fclose(IDactualFiesta);
 
     //registro de usuario
     strcpy(u.nombre, "juan");
@@ -58,37 +58,37 @@ int main(int argc,char* argv[])
     strcpy(u.tipousuario, "administrador");
     strcpy(u.contrasena, "juan");
     u.dni= 40254875;
-    //usuarios = fopen("usuarios","wb");
-    //fwrite(&u,sizeof(struct usuario),1,usuarios);
-    //fclose(usuarios);
+    usuarios = fopen("usuarios","wb");
+    fwrite(&u,sizeof(struct usuario),1,usuarios);
+    fclose(usuarios);
 
     //registro de una fiesta
-    //strcpy(f.descripcion, "fiesta del trigo");
-    //strcpy(f.nombre, "fiesta del trigo");
-    //strcpy(f.fechainicio, "18/01/14");
-    //strcpy(f.fechafin, "18/02/14");
-    //f.idfiesta= 1;
-    //fiestas = fopen ("fiestas", "wb");
-    //fwrite(&f,sizeof(struct fiesta),1,fiestas);
+    strcpy(f.descripcion, "fiesta del trigo");
+    strcpy(f.nombre, "fiesta del trigo");
+    strcpy(f.fechainicio, "18/01/14");
+    strcpy(f.fechafin, "18/02/14");
+    f.idfiesta= 1;
+    fiestas = fopen ("fiestas", "wb");
+    fwrite(&f,sizeof(struct fiesta),1,fiestas);
 
     //otra fiesta
-    //strcpy(fie.descripcion, "fiesta carnaval");
-    //strcpy(fie.nombre, "fiesta con mucha comida");
-    //strcpy(fie.fechainicio, "18/09/14");
-    //strcpy(fie.fechafin, "18/11/14");
-    //fie.idfiesta= 2;
-    //fwrite(&fie,sizeof(struct fiesta),1,fiestas);
-    //fclose(fiestas);
+    strcpy(fie.descripcion, "fiesta carnaval");
+    strcpy(fie.nombre, "fiesta con mucha comida");
+    strcpy(fie.fechainicio, "18/09/14");
+    strcpy(fie.fechafin, "18/11/14");
+    fie.idfiesta= 2;
+    fwrite(&fie,sizeof(struct fiesta),1,fiestas);
+    fclose(fiestas);
 
     //registro de USUARIOFIESTA
-    //usuarioFiesta = fopen ("usuarioFiesta", "wb");
-    //uf.idfiesta=1;
-    //strcpy(uf.mail,u.mail);
-    //uparty.idfiesta=2;
-    //strcpy(uparty.mail,u.mail);
-    //fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    //fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    //fclose(usuarioFiesta);
+    usuarioFiesta = fopen ("usuarioFiesta", "wb");
+    uf.idfiesta=1;
+    strcpy(uf.mail,u.mail);
+    uparty.idfiesta=2;
+    strcpy(uparty.mail,u.mail);
+    fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    fclose(usuarioFiesta);*/
     opcion= 4;
     while (opcion !=0){
 
@@ -136,6 +136,8 @@ int main(int argc,char* argv[])
             usuarios = fopen("usuarios","rb");
             usuarioFiesta = fopen("usuarioFiesta","rb+");
             dardebaja(u,usuarios,usuarioFiesta);
+            fclose(usuarios);
+            fclose(usuarioFiesta);
             break;
         case 6:
             fiestas = fopen ("fiestas","rb+");
@@ -341,14 +343,9 @@ else {
                 fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
 
     }
-    rewind(usuarioFiesta);
-    fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    while (!feof(usuarioFiesta)){
-        printf("%d %s \n",uf.idfiesta,uf.mail);
-            fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
 
     }
-}}}
+}}
 
 void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, char tiempo[]){
     struct fiesta fie;
