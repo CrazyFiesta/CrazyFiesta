@@ -174,7 +174,7 @@ int main(int argc,char* argv[])
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *Fiestas);
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta);
 void mostrarFiestas(struct fiesta f);
-int verificarMail (char mail[], FILE *usuarios);
+int verificarMail (char mail[], FILE *usuarioFiesta,int);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
@@ -185,6 +185,9 @@ void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta);
 int fiestaActiva(char tiempo[],int idf,FILE *fiestas);
 void ModificarFiesta(struct fiesta f, FILE *fiestas);
 void SetColor(int);
+void registrarUsuario(struct usuario, FILE *usuarios,FILE *usuarioFiesta, FILE *fiestas);
+int verificarf(int,FILE *fiestas);
+int verificartuc(char []);
 
 void ModificarFiesta(struct fiesta f, FILE *fiestas){
 struct fiesta fie;
@@ -511,16 +514,23 @@ void mostrarFiestas(struct fiesta f){
     printf("\nnombre %s\n\n", f.nombre);
 }
 
-void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
+void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE *fiestas){
     struct usuario usu;
-    struct usuariofiesta uf;
-    int idf;
-    printf("ingrese una id de una fiesta que quiera dar de alta al usuario: ");
+    struct usuariofiesta uf,uf2;
+    int idf,aux = 0;
+    printf("Ingrese una id de una fiesta que quiera dar de alta al usuario.\n");
+    printf("(Puede pedir el listado de fiestas para obtener el id):\n ");
     scanf("%d", &idf);
-    if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
-        printf("ingrese mail: ");
-        scanf("%s", &usu.mail);
-        if (verificarMail(usu.mail,usuarios)== 0){
+    if (verificarf(idf,fiestas)==0){
+            printf("La fiesta ingresada no existe \n");
+            return;
+    }
+    else {
+    	   //if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
+
+    	printf("Ingrese mail: ");
+        scanf("%s",usu.mail);
+        if (verificarMail(usu.mail,usuarioFiesta,idf)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
             printf("ingrese contraseña: ");
@@ -529,27 +539,65 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta){
             scanf("%s", &usu.nombre);
             printf("ingrese apellido: ");
             scanf("%s", &usu.apellido);
-            printf("ingrese tipousuario: ");
+            printf("ingrese tipousuario: 'administrador' o 'vendedor': ");
             scanf("%s", &usu.tipousuario);
+             if (verificartuc(usu.tipousuario)==1){
+
             uf.idfiesta= idf;
             strcpy(uf.mail,usu.mail);
             fseek(usuarios,0,SEEK_END);
             fseek(usuarioFiesta,0,SEEK_END);
             fwrite(&usu, sizeof(struct usuario), 1, usuarios);
             fwrite(&uf, sizeof(struct usuariofiesta), 1, usuarioFiesta);
-    }
+             }
+            else {
+        	SetColor(4);
+            printf("El tipo de usuario ingresado es incorrecto. \n");
+               	SetColor(15);
+            return;
+            }
+        }
     else {
     	SetColor(4);
-    	printf("Error, email en uso\n");
+    	printf("Error. El mail ya se encuentra registrado en esa fiesta\n");
     	SetColor(15);
     }
+    }}
+    
+    //else {
+    //	SetColor(4);
+    //	printf("Error, usted no tiene permisos para esa fiesta\n");
+    //	SetColor(15);
+  //  }
+//}
+
+
+//Para verificar si el tipo de usuario ingresado es correcto
+int verificartuc(char tu []){
+
+if (((strcmp(tu,"vendedor"))==0) || ((strcmp(tu,"administrador"))==0) || ((strcmp(tu,"Vendedor"))==0) || ((strcmp(tu,"Administrador"))==0)) {
+                return 1;
     }
-    else {
-    	SetColor(4);
-    	printf("Error, usted no tiene permisos para esa fiesta\n");
-    	SetColor(15);
-    }
+
+                else return 0;
+
 }
+
+//Para verificar si la fiesta existe 
+int verificarf(int idf, FILE *fiestas){
+struct fiesta f;
+rewind(fiestas);
+fread(&f,sizeof(struct fiesta),1,fiestas);
+while (!feof(fiestas)){
+    if (f.idfiesta == idf){
+        return 1;
+    }
+    fread(&f,sizeof(struct fiesta),1,fiestas);
+
+}
+return 0;
+}
+
 
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta){
 
@@ -564,15 +612,18 @@ int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta){
     return 1;
 }
 
-int verificarMail (char mail[], FILE *usuarios){
-    rewind(usuarios);
-    struct usuario usu;
-    fread(&usu,sizeof(struct usuario),1,usuarios);
-    while (!feof(usuarios)){
-       if (strcmp(usu.mail,mail)==0){
+int verificarMail (char mail[], FILE *usuarioFiesta,int idf){
+    rewind(usuarioFiesta);
+    struct usuariofiesta uf;
+    fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+    while (!feof(usuarioFiesta)){
+       if (strcmp(uf.mail,mail)==0){
+        if (idf == uf.idfiesta){
+
         return 1;
+        }
        }
-       fread(&usu,sizeof(struct usuario),1,usuarios);
+       fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     }
     return 0;
 }
