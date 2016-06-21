@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -12,6 +13,13 @@ struct usuario{
 	char apellido[20];
 	char tipousuario[15];
 	};
+
+struct producto{
+    int idproducto;
+    char nombre[40];
+    int stock;
+    float precio;
+};
 
 struct fiesta{
 	int idfiesta;
@@ -33,10 +41,13 @@ int main(int argc,char* argv[])
     FILE *fiestas;
     FILE *usuarioFiesta;
     FILE *IDactualFiesta;
+    FILE *productos;
+    FILE *IDactualProducto;
     struct usuario u;
     struct fiesta f;
     struct fiesta fie;
     struct usuariofiesta uf,uparty;
+    struct producto prod;
     int opcion;
 
     char t[15];
@@ -47,14 +58,26 @@ int main(int argc,char* argv[])
     strcpy(t,output);
 
 
-   /* //idactual creando
+   /* //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
     int contadordeID= 3;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
-
+    //ID actual del producto creando
+    IDactualProducto= fopen("idproductos", "wb");
+    int contadordeID= 2;
+    fwrite(&contadordeID, sizeof(int),1,IDactualProducto);
+    fclose(IDactualProducto);
+   /* //Registro de producto
+    prod.idproducto = 1;
+    strcpy(prod.nombre, "Gaseosas");
+    prod.precio = 15,45;
+    prod.stock = 100;
+    productos = fopen("productos", "wb");
+    fwrite(&prod, sizeof(struct producto),1,productos);
+    fclose(productos);
     //registro de usuario
-    strcpy(u.nombre, "juan");
+  /*strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
     strcpy(u.apellido, "fernandez");
     strcpy(u.tipousuario, "administrador");
@@ -63,7 +86,6 @@ int main(int argc,char* argv[])
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
     fclose(usuarios);
-
     //registro de una fiesta
     strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
@@ -72,7 +94,6 @@ int main(int argc,char* argv[])
     f.idfiesta= 1;
     fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
-
     //otra fiesta
     strcpy(fie.descripcion, "fiesta carnaval");
     strcpy(fie.nombre, "fiesta con mucha comida");
@@ -81,7 +102,6 @@ int main(int argc,char* argv[])
     fie.idfiesta= 2;
     fwrite(&fie,sizeof(struct fiesta),1,fiestas);
     fclose(fiestas);
-
     //registro de USUARIOFIESTA
     usuarioFiesta = fopen ("usuarioFiesta", "wb");
     uf.idfiesta=1;
@@ -100,12 +120,14 @@ int main(int argc,char* argv[])
     SetColor(15);
     printf(" 1.- Registrar un usuario\n");
     printf(" 2.- Listado de Fiestas\n");
-    printf(" 3.- Modificar contraseña\n");
-    printf(" 4.- Listado de Usuarios\n");
-    printf(" 5.- Dar de baja un usuario\n");
-    printf(" 6.- Dar de Alta Fiesta\n");
-    printf(" 7.- Dar de Baja Fiesta\n");
-    printf(" 8.- Modificar Fiesta\n");
+    //printf(" 3.- Modificar contraseña\n");
+    printf(" 3.- Listado de Usuarios\n");
+    printf(" 4.- Dar de baja un usuario\n");
+    printf(" 5.- Dar de Alta Fiesta\n");
+    printf(" 6.- Dar de Baja Fiesta\n");
+    printf(" 7.- Modificar Fiesta\n");
+    printf(" 8.- Dar de Alta Producto\n");
+    printf(" 9.- Listado de Productos\n");
     printf(" 0.- Salir\n");
     scanf ("%d", &opcion);
     switch(opcion){
@@ -124,26 +146,26 @@ int main(int argc,char* argv[])
             fclose(usuarioFiesta);
             fclose(fiestas);
             break;
-        case 3:
+        /*case 3:
             usuarios = fopen("usuarios","rb+");
             modificarContrasena (u,usuarios);
             fclose(usuarios);
-            break;
-        case 4:
+            break;*/
+        case 3:
             usuarioFiesta = fopen("usuarioFiesta", "rb");
             fiestas = fopen("fiestas","rb");
             listadoUsuarios(u,usuarioFiesta,fiestas);
             fclose(usuarioFiesta);
             fclose(fiestas);
             break;
-        case 5:
+        case 4:
             usuarios = fopen("usuarios","rb");
             usuarioFiesta = fopen("usuarioFiesta","rb+");
             dardebaja(u,usuarios,usuarioFiesta);
             fclose(usuarios);
             fclose(usuarioFiesta);
             break;
-        case 6:
+        case 5:
             fiestas = fopen ("fiestas","rb+");
             usuarioFiesta = fopen("usuarioFiesta", "rb+");
             IDactualFiesta= fopen("idfiestas","rb+");
@@ -152,7 +174,7 @@ int main(int argc,char* argv[])
             fclose(fiestas);
             fclose(usuarioFiesta);
             break;
-        case 7:
+        case 6:
             fiestas = fopen("fiestas", "rb+");
             usuarios = fopen("usuarios", "rb");
             usuarioFiesta = fopen("usuarioFiesta", "rb+");
@@ -161,10 +183,22 @@ int main(int argc,char* argv[])
             fclose(usuarios);
             fclose(usuarioFiesta);
             break;
-        case 8:
+        case 7:
             fiestas = fopen("fiestas", "rb+");
             ModificarFiesta(f, fiestas);
             fclose(fiestas);
+            break;
+        case 8:
+            productos = fopen("productos", "rb+");
+            IDactualProducto = fopen("idproductos", "rb+");
+            AltaProducto(productos, IDactualProducto, prod);
+            fclose(productos);
+            fclose(IDactualProducto);
+            break;
+        case 9:
+            productos = fopen("productos", "rb");
+            listadoProducto(prod, productos);
+            fclose(productos);
             break;
     }
 }
@@ -188,6 +222,10 @@ void SetColor(int);
 void registrarUsuario(struct usuario, FILE *usuarios,FILE *usuarioFiesta, FILE *fiestas);
 int verificarf(int,FILE *fiestas);
 int verificartuc(char []);
+void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p);
+void listadoProducto(struct producto p, FILE *productos);
+void mostrarProductos(struct producto p);
+
 
 void ModificarFiesta(struct fiesta f, FILE *fiestas){
 struct fiesta fie;
@@ -301,6 +339,7 @@ char mail[30];
 char mail2[30];
 char aux[]="administrador";
 int esven = 0,esadm = 0, coinc=0,idfaux;
+int x;
 
 printf("Ingrese el mail del usuario que quiere dar de baja: \n");
 scanf("%s",mail);
@@ -349,14 +388,20 @@ else {
     fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     while (!feof(usuarioFiesta)){
               if ((uf.idfiesta==idfaux) && (strcmp(uf.mail,mail)==0)){
-                uf.idfiesta = -1*idfaux;
-                strcpy(uf.mail, "dadobaja");
-                fseek(usuarioFiesta,-1*sizeof(struct usuariofiesta),SEEK_CUR);
-                fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
-                printf("La baja de usuario se ha realizado correctamente \n");
-                break;
+                SetColor(14);
+                printf("Seguro que desea dar a este usuario de baja?\nPresione 1 para continuar o cualquier otro numero para cancelar\n");
+                SetColor(15);
+                scanf("%d", &x);
+                if(x==1){
+                   uf.idfiesta = -1*idfaux;
+                   strcpy(uf.mail, "dadobaja");
+                   fseek(usuarioFiesta,-1*sizeof(struct usuariofiesta),SEEK_CUR);
+                   fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+                   printf("La baja de usuario se ha realizado correctamente \n");
+                   break;
               }
                 fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
+              }
 
     }
 
@@ -383,7 +428,7 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                 aux=1;
                 printf("El nombre de la fiesta que desea eliminar es %s y su numero de ID es %d \n", fie.nombre, fie.idfiesta);
                 SetColor(14);
-                printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otra tecla para cancelar ");
+                printf("Seguro que desea dar de baja esta fiesta? \nPresione 1 para confirmar o cualquier otro numero para cancelar ");
                 SetColor(15);
                 scanf("%d", &x);
                     if (x == 1){
@@ -563,7 +608,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
     	SetColor(15);
     }
     }}
-    
+
     //else {
     //	SetColor(4);
     //	printf("Error, usted no tiene permisos para esa fiesta\n");
@@ -583,7 +628,7 @@ if (((strcmp(tu,"vendedor"))==0) || ((strcmp(tu,"administrador"))==0) || ((strcm
 
 }
 
-//Para verificar si la fiesta existe 
+//Para verificar si la fiesta existe
 int verificarf(int idf, FILE *fiestas){
 struct fiesta f;
 rewind(fiestas);
@@ -693,4 +738,67 @@ void SetColor(int ForgC)
       SetConsoleTextAttribute(hStdOut, wColor);
  }
  return;
+}
+
+
+
+void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p){
+    int con;
+    float pre;
+    int aux, st, aux2;
+    aux=0;
+    aux2=0;
+    printf("Escriba el nombre del producto: ");
+    fflush(stdin);
+    gets(p.nombre);
+    printf("Ingrese el precio del producto: ");
+    scanf("%f", &pre);
+    while(aux==0){
+    if(pre<=0){
+        SetColor(4);
+        printf("El precio no es valido.\n");
+        SetColor(15);
+        printf("Ingrese el precio del producto: ");
+        scanf("%f", &pre);
+    }
+    else aux=1;
+    }
+    p.precio=pre;
+    printf("Ingrese el stock del producto: ");
+    scanf("%d", &st);
+    while(aux2==0){
+        if(st<=0){
+            SetColor(4);
+            printf("El stock no es valido.\n");
+            SetColor(15);
+            printf("Ingrese el stock del producto: ");
+            scanf("%d", &st);
+        }
+        else aux2=1;
+    }
+    p.stock=st;
+    fread(&con,sizeof(int),1,IDactualProducto);
+    con= con+1;
+    fseek(IDactualProducto, -1*sizeof(int), SEEK_CUR);
+    fwrite(&con, sizeof(int), 1, IDactualProducto);
+    p.idproducto= con;
+    fseek(productos, 0, SEEK_END);
+    fwrite(&p, sizeof(struct producto),1, productos);
+}
+
+void listadoProducto(struct producto p, FILE *productos){
+    struct producto prod;
+    rewind(productos);
+    fread(&prod,sizeof(struct producto),1,productos);
+    while(!feof(productos)){
+        mostrarProductos(prod);
+        fread(&prod,sizeof(struct producto),1,productos);
+    }
+}
+
+void mostrarProductos(struct producto p){
+    printf("ID del producto: %d", p.idproducto);
+    printf("\nNombre: %s", p.nombre);
+    printf("\nPrecio: %.2f", p.precio);
+    printf("\nStock: %d\n\n", p.stock);
 }
