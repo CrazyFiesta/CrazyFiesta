@@ -84,7 +84,6 @@ int main(int argc,char* argv[])
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
-
     //Registro de proveedor
     p.cuil=27382916137;
     strcpy(p.nombreempresa,"Coca cola");
@@ -92,7 +91,6 @@ int main(int argc,char* argv[])
     proveedores = fopen("proveedores","wb");
     fwrite(&p,sizeof(struct proveedor),1,proveedores);
     fclose(proveedores);
-
     //registro de usuario
     strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
@@ -155,8 +153,10 @@ int main(int argc,char* argv[])
         case 0:
             return;
         case 2:
+            fiestas = fopen("fiestas", "rb");
             listadoGeneralFiesta(fiestas);
             fclose (fiestas);
+            break;
         case 1:
     while (verificador==0){
     while (estaEnLaFiesta==0){
@@ -177,7 +177,7 @@ int main(int argc,char* argv[])
     fclose(fiestas);
     printf("Ingrese su email con el que desea iniciar sesion\n");
     scanf ("%s", &mail);
-    printf("Ingrese la contraseña de su cuenta\n");
+    printf("Ingrese la contraseÃ±a de su cuenta\n");
     scanf ("%s", &contra);
     usuarios = fopen("usuarios","rb");
     rewind(usuarios);
@@ -206,7 +206,7 @@ int main(int argc,char* argv[])
     }
 
     if (u.dni==-1){
-        printf("contraseña incorrecta\n");
+        printf("contraseÃ±a incorrecta\n");
     }
 
     if (u.dni!=-1 && verificador==0){
@@ -237,7 +237,7 @@ int main(int argc,char* argv[])
                  printf("________________________________________________________________________________\n");
                  SetColor(15);
                  printf(" 1.- Registrar un usuario\n");
-                 printf(" 2.- Modificar contraseña\n");
+                 printf(" 2.- Modificar contraseÃ±a\n");
                  printf(" 3.- Listado de Usuarios\n");
                  printf(" 4.- Dar de baja un usuario\n");
                  printf(" 0.- Salir\n");
@@ -452,7 +452,7 @@ while(!feof(proveedores)){
 
            while(opcion !=0){
                   SetColor(2);
-                printf("                       Modificar Producto                     \n");
+                printf("                       Modificar Proveedor                     \n");
                 SetColor(3);
                 printf("_________________________________________________________________\n");
                 SetColor(15);
@@ -462,7 +462,7 @@ while(!feof(proveedores)){
                 scanf("%d", &opcion);
                 switch(opcion){
                 case 0:
-                return;
+                break;
                 case 1:
                 SetColor(2);
                 printf("                        Modificar cuil                            \n");
@@ -495,6 +495,7 @@ while(!feof(proveedores)){
                 break;
                 }
     }
+    }
     else return;
     }
     fread(&p3, sizeof(struct proveedor),1, proveedores);
@@ -507,7 +508,7 @@ if(aux==0){
 }
 return;
 
-}}
+}
 
 
 void listadoproveedores(FILE *proveedores){
@@ -950,7 +951,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
         if (verificarMail(usu.mail,usuarioFiesta,idf)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
-            printf("ingrese contraseña: ");
+            printf("ingrese contraseÃ±a: ");
             scanf("%s", &usu.contrasena);
             printf("ingrese nombre: ");
             scanf("%s", &usu.nombre);
@@ -1047,12 +1048,12 @@ int verificarMail (char mail[], FILE *usuarioFiesta,int idf){
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
-    printf("Escriba la contraseña actual:");
+    printf("Escriba la contraseÃ±a actual:");
     scanf("%s",&contra);
     if (verificadorContrasena(contra,usuarios,u)==0){
-        printf("Escriba la nueva contraseña:");
+        printf("Escriba la nueva contraseÃ±a:");
         scanf("%s", &contra);
-        printf ("Vuelva a escribir la nueva contraseña:");
+        printf ("Vuelva a escribir la nueva contraseÃ±a:");
         scanf("%s", &contraV);
         if (strcmp(contra,contraV)== 0){
             strcpy(u.contrasena,contra);
@@ -1061,7 +1062,7 @@ void modificarContrasena (struct usuario u,FILE *usuarios){
     }
     else {
     	SetColor(4);
-    	printf("La contraseña que escribio no es la actual vuelva a intentarlo\n\n");
+    	printf("La contraseÃ±a que escribio no es la actual vuelva a intentarlo\n\n");
     	SetColor(15);
 }}
 
@@ -1088,7 +1089,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
         if (strcmp(usu.mail,u.mail)==0){
             fseek(usuarios,-128,SEEK_CUR);
             fwrite(&u, sizeof(struct usuario), 1, usuarios);
-            printf ("Esta es la contraseña nueva: %s\n", u.contrasena);
+            printf ("Esta es la contraseÃ±a nueva: %s\n", u.contrasena);
             break;
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
@@ -1320,7 +1321,7 @@ if(aux==0){
     printf("El producto no existe \n");
     SetColor(15);
 }
-}}
+}
 
 /*int formatoFecha(unsigned d, unsigned m, unsigned a){
   char linea[MAX_CHARS];
