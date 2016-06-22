@@ -47,7 +47,7 @@ int main(int argc,char* argv[])
     struct fiesta fie;
     struct usuariofiesta uf,uparty;
     struct producto prod;
-    int opcion;
+    int opcion, opcion2, opcion3, opcion4;
 
     char t[15];
     time_t tiempo = time(0);
@@ -76,7 +76,7 @@ int main(int argc,char* argv[])
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
     //registro de usuario
-  /*strcpy(u.nombre, "juan");
+    strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
     strcpy(u.apellido, "fernandez");
     strcpy(u.tipousuario, "administrador");
@@ -84,7 +84,7 @@ int main(int argc,char* argv[])
     u.dni= 40254875;
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
-    fclose(usuarios);
+    fclose(usuarios);/*
     //registro de una fiesta
     strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
@@ -111,110 +111,243 @@ int main(int argc,char* argv[])
     fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fclose(usuarioFiesta);*/
     opcion= 4;
+    opcion2=4;
+    opcion3=4;
+    opcion4=4;
+    int verificador=0;
+    int usuarioincorrecto=0;
+    int idf;
+    struct usuario usu;
+    char contra[15];
+    char mail[50];
+    int estaEnLaFiesta=0;
+    u.dni= -1;
+    int elegir=4;
+    while (elegir!=0){
+    fiestas = fopen ("fiestas","rb");
+    printf("                          CrazyFiesta                     \n");
+    printf("##########################################################\n");
+    printf(" 1.- Iniciar sesion\n");
+    printf(" 2.- Listado de Fiestas\n");
+    printf(" 0.- Salir\n");;
+    scanf ("%d", &elegir);
+    switch(elegir){
+        case 0:
+            return;
+        case 2:
+            listadoGeneralFiesta(fiestas);
+            fclose (fiestas);
+        case 1:
+    while (verificador==0){
+    while (estaEnLaFiesta==0){
+    printf("Ingrese la ID de la fiesta en la que desea iniciar sesion\n");
+    scanf("%d", &idf);
+    rewind (fiestas);
+    fread(&f,sizeof(struct fiesta),1,fiestas);
+    while (!feof(fiestas)){
+            if (f.idfiesta==idf){
+                estaEnLaFiesta=1;
+        }
+        fread(&f,sizeof(struct fiesta),1,fiestas);
+      }
+    if (estaEnLaFiesta==0){
+        printf("esa ID de fiesta no existe\n");
+    }
+      }
+    fclose(fiestas);
+    printf("Ingrese su email con el que desea iniciar sesion\n");
+    scanf ("%s", &mail);
+    printf("Ingrese la contraseña de su cuenta\n");
+    scanf ("%s", &contra);
+    usuarios = fopen("usuarios","rb");
+    rewind(usuarios);
+    fread(&usu, sizeof(struct usuario),1, usuarios);
+    while (!feof(usuarios)){
+        if (strcmp(usu.mail,mail)==0 ){
+            if (strcmp(usu.contrasena,contra)==0){
+            strcpy(u.nombre, usu.nombre);
+            strcpy(u.mail,usu.mail);
+            strcpy(u.apellido, usu.apellido);
+            strcpy(u.tipousuario, usu.tipousuario);
+            strcpy(u.contrasena, usu.contrasena);
+            u.dni= usu.dni;
+            usuarioFiesta = fopen ("usuarioFiesta", "rb");
+            if (verificarPermiso(idf,u,usuarioFiesta)==0){
+            verificador= 1;
+            }
+            fclose(usuarioFiesta);
+            }
+        }
+        usuarioincorrecto=1;
+        fread(&usu, sizeof(struct usuario),1, usuarios);
+    }
+    if (usuarioincorrecto==1&& verificador==0){
+        printf("email incorrecto o no existe\n");
+    }
+
+    if (u.dni==-1){
+        printf("contraseña incorrecta\n");
+    }
+
+    if (u.dni!=-1 && verificador==0){
+        printf ("su usuario no tiene ningun permiso en la fiesta que ingreso\n");
+    }
+    }
+    if (verificador==1){
+    printf("Se inicio sesion correctamente\n");
+    fclose(usuarios);
     while (opcion !=0){
 
-    printf("         CrazyFiesta            \n");
+    printf("                                      CrazyFiesta                                    \n");
     SetColor(3);
-    printf("######################################\n");
+    printf("######################################################################################\n");
     SetColor(15);
-    printf(" 1.- Registrar un usuario\n");
-    printf(" 2.- Listado de Fiestas\n");
-    //printf(" 3.- Modificar contraseña\n");
-    //printf(" 3.- Listado de Usuarios\n");
-    //printf(" 3.- Dar de baja un usuario\n");
-    printf(" 3.- Dar de Alta Fiesta\n");
-    printf(" 4.- Dar de Baja Fiesta\n");
-    printf(" 5.- Modificar Fiesta\n");
-    printf(" 6.- Dar de Alta Producto\n");
-    printf(" 7.- Listado de Productos\n");
-    printf(" 8.- Modificar Producto\n");
-    printf(" 9.- Dar de Baja Producto\n");
+    printf(" 1.- Usuarios\n");
+    printf(" 2.- Fiestas\n");
+    printf(" 3.- Productos\n");
     printf(" 0.- Salir\n");
     scanf ("%d", &opcion);
     switch(opcion){
         case 1:
-            usuarios = fopen("usuarios","rb+");
-            usuarioFiesta = fopen("usuarioFiesta", "rb+");
-            registrarUsuario(u,usuarios,usuarioFiesta);
-            fclose(usuarios);
-            fclose(usuarioFiesta);
-            break;
+            while(opcion2!=0){
+                 SetColor(2);
+                 printf("                             Usuarios                                         \n");
+                 SetColor(3);
+                 printf("________________________________________________________________________________\n");
+                 SetColor(15);
+                 printf(" 1.- Registrar un usuario\n");
+                 printf(" 2.- Modificar contraseña\n");
+                 printf(" 3.- Listado de Usuarios\n");
+                 printf(" 4.- Dar de baja un usuario\n");
+                 printf(" 0.- Salir\n");
+                 scanf("%d", &opcion2);
+                 switch(opcion2){
+            case 0:
+                break;
 
-        case 2:
-            usuarioFiesta = fopen("usuarioFiesta", "rb");
-            fiestas = fopen ("fiestas", "rb");
-            listadoFiesta(u,usuarioFiesta, fiestas);
-            fclose(usuarioFiesta);
-            fclose(fiestas);
-            break;
-        /*case 3:
-            usuarios = fopen("usuarios","rb+");
-            modificarContrasena (u,usuarios);
-            fclose(usuarios);
-            break;
-        case 3:
-            usuarioFiesta = fopen("usuarioFiesta", "rb");
-            fiestas = fopen("fiestas","rb");
-            listadoUsuarios(u,usuarioFiesta,fiestas);
-            fclose(usuarioFiesta);
-            fclose(fiestas);
-            break;
-        case 3:
-            usuarios = fopen("usuarios","rb");
-            usuarioFiesta = fopen("usuarioFiesta","rb+");
-            dardebaja(u,usuarios,usuarioFiesta);
-            fclose(usuarios);
-            fclose(usuarioFiesta);
-            break;*/
-        case 3:
-            fiestas = fopen ("fiestas","rb+");
-            usuarioFiesta = fopen("usuarioFiesta", "rb+");
-            IDactualFiesta= fopen("idfiestas","rb+");
-            AltaFiesta(IDactualFiesta, fiestas,usuarioFiesta,u);
-            fclose(IDactualFiesta);
-            fclose(fiestas);
-            fclose(usuarioFiesta);
-            break;
-        case 4:
-            fiestas = fopen("fiestas", "rb+");
-            usuarios = fopen("usuarios", "rb");
-            usuarioFiesta = fopen("usuarioFiesta", "rb+");
-            BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta,t);
-            fclose(fiestas);
-            fclose(usuarios);
-            fclose(usuarioFiesta);
-            break;
-        case 5:
-            fiestas = fopen("fiestas", "rb+");
-            ModificarFiesta(f, fiestas);
-            fclose(fiestas);
-            break;
-        case 6:
-            productos = fopen("productos", "rb+");
-            IDactualProducto = fopen("idproductos", "rb+");
-            AltaProducto(productos, IDactualProducto, prod);
-            fclose(productos);
-            fclose(IDactualProducto);
-            break;
-        case 7:
-            productos = fopen("productos", "rb");
-            listadoProducto(prod, productos);
-            fclose(productos);
-            break;
-        case 8:
-            productos = fopen("productos", "rb+");
-            ModificarProducto(prod, productos);
-            fclose(productos);
-            break;
-        case 9:
-            productos = fopen("productos", "rb+");
-            BajaProducto(prod, productos);
-            fclose(productos);
-            break;
+            case 1:
+                usuarios = fopen("usuarios","rb+");
+                usuarioFiesta = fopen("usuarioFiesta", "rb+");
+                fiestas = fopen("fiestas", "rb");
+                registrarUsuario(u,usuarios,usuarioFiesta,fiestas);
+                fclose(usuarios);
+                fclose(usuarioFiesta);
+                break;
+            case 2:
+                usuarios = fopen("usuarios","rb+");
+                modificarContrasena (u,usuarios);
+                fclose(usuarios);
+                break;
+            case 3:
+                usuarioFiesta = fopen("usuarioFiesta", "rb");
+                fiestas = fopen("fiestas","rb");
+                listadoUsuarios(u,usuarioFiesta,fiestas);
+                fclose(usuarioFiesta);
+                fclose(fiestas);
+                break;
+            case 4:
+                usuarios = fopen("usuarios","rb");
+                usuarioFiesta = fopen("usuarioFiesta","rb+");
+                dardebaja(u,usuarios,usuarioFiesta);
+                fclose(usuarios);
+                fclose(usuarioFiesta);
+                break;
+            }
+
     }
+        case 2:
+                 while(opcion3!=0){
+                 SetColor(2);
+                 printf("                            Fiestas                                         \n");
+                 SetColor(3);
+                 printf("________________________________________________________________________________\n");
+                 SetColor(15);
+                 printf(" 1.- Dar de Alta Fiesta\n");
+                 printf(" 2.- Listado de Fiestas\n");
+                 printf(" 3.- Modificar Fiesta\n");
+                 printf(" 4.- Dar de Baja Fiesta\n");
+                 printf(" 0.- Salir\n");
+                 scanf("%d", &opcion3);
+                 switch(opcion3){
+
+             case 0:
+                break;
+             case 1:
+                fiestas = fopen ("fiestas","rb+");
+                usuarioFiesta = fopen("usuarioFiesta", "rb+");
+                IDactualFiesta= fopen("idfiestas","rb+");
+                AltaFiesta(IDactualFiesta, fiestas,usuarioFiesta,u);
+                fclose(IDactualFiesta);
+                fclose(fiestas);
+                fclose(usuarioFiesta);
+                break;
+             case 2:
+                usuarioFiesta = fopen("usuarioFiesta", "rb");
+                fiestas = fopen ("fiestas", "rb");
+                listadoFiesta(u,usuarioFiesta, fiestas);
+                fclose(usuarioFiesta);
+                fclose(fiestas);
+                break;
+             case 3:
+                fiestas = fopen("fiestas", "rb+");
+                ModificarFiesta(f, fiestas);
+                fclose(fiestas);
+                break;
+             case 4:
+                fiestas = fopen("fiestas", "rb+");
+                usuarios = fopen("usuarios", "rb");
+                usuarioFiesta = fopen("usuarioFiesta", "rb+");
+                BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta,t);
+                fclose(fiestas);
+                fclose(usuarios);
+                fclose(usuarioFiesta);
+                break;
+                 }
+                }
+     case 3:
+                while(opcion4!=0){
+                    SetColor(2);
+                    printf("                            Productos                                         \n");
+                    SetColor(3);
+                    printf("________________________________________________________________________________\n");
+                    SetColor(15);
+                    printf(" 1.- Dar de Alta Producto\n");
+                    printf(" 2.- Listado de Producto\n");
+                    printf(" 3.- Modificar Producto\n");
+                    printf(" 4.- Dar de Baja Producto\n");
+                    printf(" 0.- Salir\n");
+                    scanf("%d", &opcion4);
+                    switch(opcion4){
+
+                case 0:
+                    break;
+                case 1:
+                    productos = fopen("productos", "rb+");
+                    IDactualProducto = fopen("idproductos", "rb+");
+                    AltaProducto(productos, IDactualProducto, prod);
+                    fclose(productos);
+                    fclose(IDactualProducto);
+                    break;
+                case 2:
+                    productos = fopen("productos", "rb");
+                    listadoProducto(prod, productos);
+                    fclose(productos);
+                    break;
+                case 3:
+                    productos = fopen("productos", "rb+");
+                    ModificarProducto(prod, productos);
+                    fclose(productos);
+                    break;
+                case 4:
+                    productos = fopen("productos", "rb+");
+                    BajaProducto(prod, productos);
+                    fclose(productos);
+                    break;
+                    }
+                }
+                return;
 }
-    return 0;
-}
+    }}}}}
 
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *Fiestas);
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta);
@@ -238,7 +371,16 @@ void listadoProducto(struct producto p, FILE *productos);
 void mostrarProductos(struct producto p);
 void ModificarProducto(struct producto p, FILE *productos);
 void BajaProducto(struct producto p, FILE *productos);
+void listadoGeneralFiesta(FILE *fiestas);
 
+void listadoGeneralFiesta(FILE *fiestas){
+    struct fiesta fies;
+    fread(&fies,sizeof(struct fiesta),1,fiestas);
+        while ( !feof(fiestas)){
+        mostrarFiestas(fies);
+        fread(&fies,sizeof(struct fiesta),1,fiestas);
+}
+}
 
 void ModificarFiesta(struct fiesta f, FILE *fiestas){
 struct fiesta fie;
@@ -593,7 +735,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
             return;
     }
     else {
-    	   //if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
+    	   if  (verificarPermiso(idf,u,usuarioFiesta)== 0){
 
     	printf("Ingrese mail: ");
         scanf("%s",usu.mail);
@@ -629,14 +771,14 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
     	printf("Error. El mail ya se encuentra registrado en esa fiesta\n");
     	SetColor(15);
     }
-    }}
+    }
 
-    //else {
-    //	SetColor(4);
-    //	printf("Error, usted no tiene permisos para esa fiesta\n");
-    //	SetColor(15);
-  //  }
-//}
+    else {
+    SetColor(4);
+    	printf("Error, usted no tiene permisos para esa fiesta\n");
+    	SetColor(15);
+    }
+}}
 
 
 //Para verificar si el tipo de usuario ingresado es correcto
@@ -971,3 +1113,18 @@ if(aux==0){
     SetColor(15);
 }
 }
+
+/*int formatoFecha(unsigned d, unsigned m, unsigned a){
+  char linea[MAX_CHARS];
+   if (fgets(linea, MAX_CHARS, stdin) == NULL){
+      return 0;
+   }
+   if (sscanf(linea, "%2u/%2u/%4u", &d, &m, &a) == 3){
+      if((d>=1 && d<=31) &&(m>=1 && m<=12) && (a>=2000 && a<=2200)){
+            return 1;
+      }
+   }else
+      puts("Entrada no valida");
+   return 1;
+}
+*/
