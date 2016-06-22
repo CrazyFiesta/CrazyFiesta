@@ -13,6 +13,12 @@ struct usuario{
 	char tipousuario[15];
 	};
 
+struct proveedor{
+int cuil;
+char nombreempresa[50];
+char mail[50];
+};
+
 struct producto{
     int idproducto;
     char nombre[40];
@@ -36,18 +42,21 @@ struct usuariofiesta{
 
 int main(int argc,char* argv[])
 {
+    FILE *proveedores;
     FILE *usuarios;
     FILE *fiestas;
     FILE *usuarioFiesta;
     FILE *IDactualFiesta;
     FILE *productos;
     FILE *IDactualProducto;
+    
+    struct proveedor p;
     struct usuario u;
     struct fiesta f;
     struct fiesta fie;
     struct usuariofiesta uf,uparty;
     struct producto prod;
-    int opcion, opcion2, opcion3, opcion4;
+    int opcion, opcion2, opcion3, opcion4,opcion5;
 
     char t[15];
     time_t tiempo = time(0);
@@ -75,6 +84,15 @@ int main(int argc,char* argv[])
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
+    
+    //Registro de proveedor
+    p.cuil=27382916137;
+    strcpy(p.nombreempresa,"Arcor");
+    strcpy(p.mail,"juan@hotmail.com");
+    proveedores = fopen("proveedores","wb");
+    fwrite(&p,sizeof(struct proveedor),1,proveedores);
+    fclose(proveedores);
+    
     //registro de usuario
     strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
@@ -114,6 +132,8 @@ int main(int argc,char* argv[])
     opcion2=4;
     opcion3=4;
     opcion4=4;
+    opcion5=4;
+    
     int verificador=0;
     int usuarioincorrecto=0;
     int idf;
@@ -205,6 +225,7 @@ int main(int argc,char* argv[])
     printf(" 1.- Usuarios\n");
     printf(" 2.- Fiestas\n");
     printf(" 3.- Productos\n");
+    printf(" 4.- Proveedores\n");
     printf(" 0.- Salir\n");
     scanf ("%d", &opcion);
     switch(opcion){
@@ -345,10 +366,54 @@ int main(int argc,char* argv[])
                     break;
                     }
                 }
+                case 4:
+                    while(opcion5!=0){
+                    SetColor(2);
+                    printf("                            Proveedores                                         \n");
+                    SetColor(3);
+                    printf("________________________________________________________________________________\n");
+                 SetColor(15);
+                 printf(" 1.- Dar de Alta Proveedor\n");
+                 printf(" 2.- Listado de Proveedores\n");
+                 printf(" 3.- Modificar Proveedor\n");
+                 printf(" 4.- Dar de Baja Proveedor\n");
+                 printf(" 0.- Salir\n");
+                 scanf("%d", &opcion5);
+                 switch(opcion5){
+
+             case 0:
+                break;
+             case 1:
+                 proveedores=fopen("proveedores","rb+");
+                 usuarios=fopen("usuarios","rb");
+                AltaProveedor(proveedores,usuarios);
+                fclose(proveedores);
+                break;
+             case 2:
+                proveedores=fopen("proveedores","rb");
+                listadoproveedores(proveedores);
+                fclose(proveedores);
+                break;
+             case 3:
+                proveedores=fopen("proveedores","rb+");
+                modificarProveedor(proveedores);
+                fclose(proveedores);
+                break;
+             case 4:
+                proveedores=fopen("proveedores","rb+");
+                dardebajaproveedor(proveedores);
+                fclose(proveedores);
+                break;
+                 }
                 return;
 }
-    }}}}}
-
+    }}}}}}
+    
+void dardebajaproveedor(FILE *proveedores);
+void modificarProveedor(FILE *proveedores);
+void listadoproveedores(FILE *proveedores);
+void AltaProveedor(FILE *proveedores,FILE *usuarios);
+int verificarexistenciamail(struct proveedor,FILE* usuarios);
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *Fiestas);
 int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta);
 void mostrarFiestas(struct fiesta f);
@@ -372,6 +437,207 @@ void mostrarProductos(struct producto p);
 void ModificarProducto(struct producto p, FILE *productos);
 void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
+
+void dardebajaproveedor(FILE *proveedores){
+int caux,aux=0,x;
+char marca[25];
+strcpy(marca, "(Proveedor eliminado)");
+struct proveedor p4;
+
+SetColor(8);
+printf("Ingrese el cuil del proveedor que desea dar de baja: \n");
+printf("(Ingrese solo numeros, sin el signo '-'):\n");
+printf("(Puede ver el cuil de los proveedores en el listado de proveedores)\n");
+scanf("%d",&caux);
+SetColor(15);
+
+fread(&p4,sizeof(struct proveedor),1,proveedores);
+while (!feof(proveedores)){
+    if (p4.cuil == caux){
+        aux = 1;
+        printf("El cuil del proveedor que desea eliminar es %d \n", p4.cuil);
+        SetColor(14);
+        printf("Seguro que desea dar de baja este proveedor?\nPresione 1 para confirmar o cualquier otro numero para cancelar\n");
+        SetColor(15);
+        scanf("%d", &x);
+        if(x==1){
+                p4.cuil= -1*p4.cuil;
+            strcpy(p4.nombreempresa, strcat(p4.nombreempresa, marca));
+                        fseek(proveedores,-1*sizeof(struct proveedor),SEEK_CUR);
+                                    fwrite(&p4,sizeof(struct proveedor),1,proveedores);
+          SetColor(8);
+            printf("La baja se ha realizado correctamente.\n");
+            SetColor(15);
+
+            break;
+
+        }
+        else return;
+    }
+    fread(&p4,sizeof(struct proveedor),1,proveedores);
+
+}
+if (aux ==0){
+            SetColor(4);
+
+    printf("El cuil ingresado no se encuentra registrado en el sistema \n");
+    SetColor(15);
+
+}
+return;
+}
+
+void modificarProveedor(FILE *proveedores){
+int caux,x,opcion =4,caux2,aux;
+struct proveedor p3;
+printf("Ingrese el cuil del proveedor que desea modificar: \n");
+printf("(Ingrese solo numeros, sin el signo '-'):\n");
+scanf("%d",&caux);
+rewind(proveedores);
+fread(&p3,sizeof(struct proveedor),1,proveedores);
+while(!feof(proveedores)){
+    if (p3.cuil==caux){
+            aux=1;
+            printf("El cuil del proveedor que desea modificar es: %d\n", p3.cuil);
+            SetColor(14);
+            printf("Seguro que desea modificar este proveedor?\nPresione 1 para confirmar o cualquier otro numero para cancelar\n");
+            SetColor(15);
+            scanf("%d", &x);
+            if(x==1){
+
+           while(opcion !=0){
+                  SetColor(2);
+                printf("                       Modificar Proveedor                     \n");
+                SetColor(3);
+                printf("_________________________________________________________________\n");
+                SetColor(15);
+                printf(" 1.- Modificar cuil\n");
+                printf(" 2.- Modificar nombre de la empresa\n");
+                printf(" 0.- Salir\n");
+                scanf("%d", &opcion);
+                switch(opcion){
+                case 0:
+                break;
+                case 1:
+                SetColor(2);
+                printf("                        Modificar cuil                            \n");
+                SetColor(3);
+                printf("_______________________________________________________________________\n");
+                SetColor(15);
+                fflush(stdin);
+
+                printf("Ingrese el nuevo cuil: \n");
+                scanf("%d",&caux2);
+                p3.cuil=caux2;
+               fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
+               fwrite(&p3, sizeof(struct proveedor),1,proveedores);
+                SetColor(8);
+                printf("La modificacion del cuil se ha realizado correctamente.\n");
+                break;
+                case 2:
+                    SetColor(2);
+                printf("                        Modificar nombre de la empresa                                \n");
+                SetColor(3);
+                printf("__________________________________________________________________________\n");
+                SetColor(15);
+                fflush(stdin);
+                printf("Ingrese el nuevo nombre de la empresa: \n");
+                gets(p3.nombreempresa);
+                fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
+                fwrite(&p3, sizeof(struct proveedor),1,proveedores);
+                SetColor(8);
+                printf("La modificacion del nombre de la empresa se ha realizado correctamente.\n");
+                break;
+                }
+    }
+    }
+    else return;
+    }
+    fread(&p3, sizeof(struct proveedor),1, proveedores);
+}
+
+if(aux==0){
+    SetColor(4);
+    printf("El cuil ingresado no se encuentra registrado en el sistema.\n");
+    SetColor(15);
+}
+return;
+
+}
+
+
+void listadoproveedores(FILE *proveedores){
+struct proveedor p2;
+SetColor(2);
+
+printf("                 Listado de proveedores registrados en el sistema              \n");
+                    SetColor(3);
+
+printf("________________________________________________________________________________\n");
+                    SetColor(15);
+fread(&p2,sizeof(struct proveedor),1,proveedores);
+
+while (!feof(proveedores)){
+    printf("Cuil: %d            Nombre de la empresa: %s\n",p2.cuil,p2.nombreempresa);
+    fread(&p2,sizeof(struct proveedor),1,proveedores);
+
+}
+
+}
+
+void AltaProveedor(FILE *proveedores,FILE *usuarios){
+struct proveedor p1;
+
+printf("Ingrese el cuil del proveedor que desea dar de alta: \n");
+printf("(Ingrese solo numeros, sin el signo '-'):\n");
+scanf("%d",&p1.cuil);
+fflush(stdin);
+
+printf("Ingrese el nombre de la empresa de la cual forma parte el proveedor:\n");
+scanf("%s",p1.nombreempresa);
+fflush(stdin);
+
+printf("Ingrese su mail:\n");
+scanf("%s",p1.mail);
+fflush(stdin);
+
+if (verificarexistenciamail(p1, usuarios)==0) {
+
+        fseek(proveedores, 0, SEEK_END);
+        fwrite(&p1, sizeof(struct proveedor),1, proveedores);
+
+        SetColor(2);
+
+        printf("El proveedor se ha dado de alta correctamente\n");
+        SetColor(15);
+
+
+
+}
+else {
+        SetColor(4);
+
+        printf("El mail ingresado no es correcto\n");
+                SetColor(15);
+
+return;
+}
+
+}
+
+int verificarexistenciamail(struct proveedor p1,FILE* usuarios){
+rewind(usuarios);
+struct usuario uaux;
+fread(&uaux,sizeof(struct usuario),1,usuarios);
+while (!feof(usuarios)){
+    if (strcmp(uaux.mail,p1.mail)==0){
+        return 0;
+    }
+    fread(&uaux,sizeof(struct usuario),1,usuarios);
+}
+return 1;
+}
+
 
 void listadoGeneralFiesta(FILE *fiestas){
     struct fiesta fies;
