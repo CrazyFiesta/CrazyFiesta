@@ -679,7 +679,8 @@ void listadoGeneralFiesta(FILE *fiestas){
     struct fiesta fies;
     fread(&fies,sizeof(struct fiesta),1,fiestas);
         while ( !feof(fiestas)){
-        mostrarFiestas(fies);
+                if (fies.idfiesta>0){
+        mostrarFiestas(fies);}
         fread(&fies,sizeof(struct fiesta),1,fiestas);
 }
 }
