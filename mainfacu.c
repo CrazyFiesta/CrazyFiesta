@@ -186,6 +186,7 @@ int main(int argc,char* argv[])
         case 2:
             listadoGeneralFiesta(fiestas);
             fclose (fiestas);
+            break;
         case 1:
     while (verificador==0){
     while (estaEnLaFiesta==0){
@@ -960,18 +961,10 @@ void AltaFiesta (FILE *IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct 
     printf("Escriba el nombre de la fiesta: ");
     fflush(stdin);
     gets(f.nombre);
-    printf("Ingrese el dia de inicio de la fiesta en formato dd: ");
-    scanf("%d", &f.fechainicio.dia);
-    printf("Ingrese el mes de inicio de la fiesta en formato mm: ");
-    scanf("%d", &f.fechainicio.mes);
-    printf("Ingrese el año de inicio de la fiesta en formato aa:  ");
-    scanf("%d", &f.fechainicio.year);
-    printf("Ingrese el dia de fin de la fiesta en formato dd: ");
-    scanf("%d", &f.fechafin.dia);
-    printf("Ingrese el mes de fin de la fiesta en formato mm: ");
-    scanf("%d", &f.fechafin.mes);
-    printf("Ingrese el año de fin de la fiesta en formato aa:  ");
-    scanf("%d", &f.fechafin.year);
+    printf("Ingrese la fecha de inicio de la fiesta en formato dd/mm/aa: ");
+    scanf ("%d/%d/%d",&f.fechainicio.dia, &f.fechainicio.mes,&f.fechainicio.year);
+    printf("Ingrese la fecha de fin de la fiesta en formato dd/mm/aa: ");
+    scanf ("%d/%d/%d",&f.fechafin.dia, &f.fechafin.mes,&f.fechafin.year);
     printf("Ingrese una breve descripcion de la fiesta: ");
     fflush(stdin);
     gets(f.descripcion);
