@@ -276,6 +276,7 @@ int main(int argc,char* argv[])
             }
 
     }
+    break;
         case 2:
                  while(opcion3!=0){
                  SetColor(2);
@@ -325,6 +326,7 @@ int main(int argc,char* argv[])
                 break;
                  }
                 }
+                break;
      case 3:
                 while(opcion4!=0){
                     SetColor(2);
@@ -366,6 +368,7 @@ int main(int argc,char* argv[])
                     break;
                     }
                 }
+                break;
                 case 4:
                     while(opcion5!=0){
                     SetColor(2);
@@ -407,7 +410,9 @@ int main(int argc,char* argv[])
                  }
                 return;
 }
-    }}}}}}
+    }
+    break;
+    }}}}}
     
 void dardebajaproveedor(FILE *proveedores);
 void modificarProveedor(FILE *proveedores);
