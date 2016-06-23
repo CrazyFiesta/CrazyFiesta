@@ -229,6 +229,8 @@ int main(int argc,char* argv[])
     printf(" 0.- Salir\n");
     scanf ("%d", &opcion);
     switch(opcion){
+    	case 0:
+    	return;
         case 1:
             while(opcion2!=0){
                  SetColor(2);
