@@ -83,7 +83,7 @@ int main(int argc,char* argv[])
     fechaActual.year = atoi(year);
 
 
-    /*strcpy(f.descripcion, "fiesta del trigo");
+   /* strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
     f.fechainicio.mes = 06;
@@ -94,14 +94,14 @@ int main(int argc,char* argv[])
     f.idfiesta= 1;
     fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
-    fclose (fiestas);/*
+    fclose (fiestas);
 
-   /* //id actual fiesta creando
+    //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
     int contadordeID= 3;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
-    //ID actual del producto creando
+   /* //ID actual del producto creando
     IDactualProducto= fopen("idproductos", "wb");
     int contadordeID= 2;
     fwrite(&contadordeID, sizeof(int),1,IDactualProducto);
@@ -133,22 +133,6 @@ int main(int argc,char* argv[])
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
     fclose(usuarios);/*
-    //registro de una fiesta
-    strcpy(f.descripcion, "fiesta del trigo");
-    strcpy(f.nombre, "fiesta del trigo");
-    strcpy(f.fechainicio, "18/01/14");
-    strcpy(f.fechafin, "18/02/14");
-    f.idfiesta= 1;
-    fiestas = fopen ("fiestas", "wb");
-    fwrite(&f,sizeof(struct fiesta),1,fiestas);
-    //otra fiesta
-    strcpy(fie.descripcion, "fiesta carnaval");
-    strcpy(fie.nombre, "fiesta con mucha comida");
-    strcpy(fie.fechainicio, "18/09/14");
-    strcpy(fie.fechafin, "18/11/14");
-    fie.idfiesta= 2;
-    fwrite(&fie,sizeof(struct fiesta),1,fiestas);
-    fclose(fiestas);
     //registro de USUARIOFIESTA
     usuarioFiesta = fopen ("usuarioFiesta", "wb");
     uf.idfiesta=1;
@@ -208,7 +192,7 @@ int main(int argc,char* argv[])
     fclose(fiestas);
     printf("Ingrese su email con el que desea iniciar sesion\n");
     scanf ("%s", &mail);
-    printf("Ingrese la contraseña de su cuenta\n");
+    printf("Ingrese la contraseÃ±a de su cuenta\n");
     scanf ("%s", &contra);
     usuarios = fopen("usuarios","rb");
     rewind(usuarios);
@@ -237,7 +221,7 @@ int main(int argc,char* argv[])
     }
 
     if (u.dni==-1){
-        printf("contraseña incorrecta\n");
+        printf("contraseÃ±a incorrecta\n");
     }
 
     if (u.dni!=-1 && verificador==0){
@@ -272,7 +256,7 @@ int main(int argc,char* argv[])
                  printf("________________________________________________________________________________\n");
                  SetColor(15);
                  printf(" 1.- Registrar un usuario\n");
-                 printf(" 2.- Modificar contraseña\n");
+                 printf(" 2.- Modificar contraseÃ±a\n");
                  printf(" 3.- Listado de Usuarios\n");
                  printf(" 4.- Dar de baja un usuario\n");
                  printf(" 0.- Salir\n");
@@ -636,8 +620,8 @@ scanf("%s",p1.nombreempresa);
 fflush(stdin);
 
 printf("Ingrese su mail:\n");
-scanf("%s",p1.mail);
 fflush(stdin);
+gets(p1.nombreempresa);
 
 if (verificarexistenciamail(p1, usuarios)==0) {
 
@@ -748,7 +732,7 @@ while(!feof(fiestas)){
                     scanf("%d", &fie.fechainicio.dia);
                     printf("Ingrese el mes de inicio de la fiesta en formato mm: ");
                     scanf("%d", &fie.fechainicio.mes);
-                    printf("Ingrese el año de inicio de la fiesta en formato aa:  ");
+                    printf("Ingrese el aÃ±o de inicio de la fiesta en formato aa:  ");
                     scanf("%d", &fie.fechainicio.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
@@ -765,7 +749,7 @@ while(!feof(fiestas)){
                     scanf("%d", &fie.fechafin.dia);
                     printf("Ingrese el mes de fin de la fiesta en formato mm: ");
                     scanf("%d", &fie.fechafin.mes);
-                    printf("Ingrese el año de fin de la fiesta en formato aa:  ");
+                    printf("Ingrese el aÃ±o de fin de la fiesta en formato aa:  ");
                     scanf("%d", &fie.fechafin.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
@@ -1048,11 +1032,11 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
 }
 
 void mostrarFiestas(struct fiesta f){
-    printf("fechainicio %d/%d/%d", f.fechainicio.dia, f.fechainicio.mes, f.fechainicio.year);
-    printf("\nfechafin %d/%d/%d", f.fechafin.dia, f.fechafin.mes, f.fechafin.year);
-    printf("\nidfiesta %d", f.idfiesta);
-    printf("\ndescripcion %s", f.descripcion);
-    printf("\nnombre %s\n\n", f.nombre);
+    printf("fechainicio: %d/%d/%d", f.fechainicio.dia, f.fechainicio.mes, f.fechainicio.year);
+    printf("\nfechafin: %d/%d/%d", f.fechafin.dia, f.fechafin.mes, f.fechafin.year);
+    printf("\nidfiesta: %d", f.idfiesta);
+    printf("\ndescripcion: %s", f.descripcion);
+    printf("\nnombre: %s\n\n", f.nombre);
 }
 
 void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE *fiestas){
@@ -1074,7 +1058,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
         if (verificarMail(usu.mail,usuarioFiesta,idf)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
-            printf("ingrese contraseña: ");
+            printf("ingrese contraseÃ±a: ");
             scanf("%s", &usu.contrasena);
             printf("ingrese nombre: ");
             scanf("%s", &usu.nombre);
@@ -1171,12 +1155,12 @@ int verificarMail (char mail[], FILE *usuarioFiesta,int idf){
 
 void modificarContrasena (struct usuario u,FILE *usuarios){
     char contra[50], contraV[50];
-    printf("Escriba la contraseña actual:");
+    printf("Escriba la contraseÃ±a actual:");
     scanf("%s",&contra);
     if (verificadorContrasena(contra,usuarios,u)==0){
-        printf("Escriba la nueva contraseña:");
+        printf("Escriba la nueva contraseÃ±a:");
         scanf("%s", &contra);
-        printf ("Vuelva a escribir la nueva contraseña:");
+        printf ("Vuelva a escribir la nueva contraseÃ±a:");
         scanf("%s", &contraV);
         if (strcmp(contra,contraV)== 0){
             strcpy(u.contrasena,contra);
@@ -1185,7 +1169,7 @@ void modificarContrasena (struct usuario u,FILE *usuarios){
     }
     else {
     	SetColor(4);
-    	printf("La contraseña que escribio no es la actual vuelva a intentarlo\n\n");
+    	printf("La contraseÃ±a que escribio no es la actual vuelva a intentarlo\n\n");
     	SetColor(15);
 }}
 
@@ -1212,7 +1196,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
         if (strcmp(usu.mail,u.mail)==0){
             fseek(usuarios,-128,SEEK_CUR);
             fwrite(&u, sizeof(struct usuario), 1, usuarios);
-            printf ("Esta es la contraseña nueva: %s\n", u.contrasena);
+            printf ("Esta es la contraseÃ±a nueva: %s\n", u.contrasena);
             break;
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
