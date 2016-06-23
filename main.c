@@ -616,8 +616,8 @@ scanf("%d",&p1.cuil);
 fflush(stdin);
 
 printf("Ingrese el nombre de la empresa de la cual forma parte el proveedor:\n");
-scanf("%s",p1.nombreempresa);
 fflush(stdin);
+gets(p1.nombreempresa);
 
 printf("Ingrese su mail:\n");
 scanf("%s",p1.mail);
