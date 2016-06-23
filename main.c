@@ -26,13 +26,22 @@ struct producto{
     float precio;
 };
 
+
+struct fecha{
+    int dia;
+    int mes;
+    int year;
+};
+
+
 struct fiesta{
 	int idfiesta;
 	char descripcion[300];
 	char nombre[100];
-	char fechainicio[15];
-	char fechafin[15];
+	struct fecha fechainicio;
+	struct fecha fechafin;
 	};
+
 
 struct usuariofiesta{
 	int idfiesta;
@@ -49,7 +58,7 @@ int main(int argc,char* argv[])
     FILE *IDactualFiesta;
     FILE *productos;
     FILE *IDactualProducto;
-    
+
     struct proveedor p;
     struct usuario u;
     struct fiesta f;
@@ -58,20 +67,41 @@ int main(int argc,char* argv[])
     struct producto prod;
     int opcion, opcion2, opcion3, opcion4,opcion5;
 
+    char dia[15];
+    char mes[15];
+    char year[15];
     char t[15];
+    struct fecha fechaActual;
     time_t tiempo = time(0);
     struct tm *tlocal = localtime(&tiempo);
     char output[15];
-    strftime(output,15,"%d/%m/%y",tlocal);
-    strcpy(t,output);
+    strftime(dia,15,"%d",tlocal);
+    strftime(mes,15,"%m",tlocal);
+    strftime(year,15,"%y",tlocal);
+    fechaActual.dia = atoi(dia);
+    fechaActual.mes = atoi(mes);
+    fechaActual.year = atoi(year);
 
 
-   /* //id actual fiesta creando
+   /* strcpy(f.descripcion, "fiesta del trigo");
+    strcpy(f.nombre, "fiesta del trigo");
+    f.fechainicio.dia = 18;
+    f.fechainicio.mes = 06;
+    f.fechainicio.year = 16;
+    f.fechafin.dia = 21;
+    f.fechafin.mes = 06;
+    f.fechafin.year = 16;
+    f.idfiesta= 1;
+    fiestas = fopen ("fiestas", "wb");
+    fwrite(&f,sizeof(struct fiesta),1,fiestas);
+    fclose (fiestas);
+
+    //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
     int contadordeID= 3;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
-    //ID actual del producto creando
+   /* //ID actual del producto creando
     IDactualProducto= fopen("idproductos", "wb");
     int contadordeID= 2;
     fwrite(&contadordeID, sizeof(int),1,IDactualProducto);
@@ -84,7 +114,7 @@ int main(int argc,char* argv[])
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
-    
+
     //Registro de proveedor
     p.cuil=27382916137;
     strcpy(p.nombreempresa,"Arcor");
@@ -92,7 +122,7 @@ int main(int argc,char* argv[])
     proveedores = fopen("proveedores","wb");
     fwrite(&p,sizeof(struct proveedor),1,proveedores);
     fclose(proveedores);
-    
+
     //registro de usuario
     strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
@@ -103,22 +133,6 @@ int main(int argc,char* argv[])
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
     fclose(usuarios);/*
-    //registro de una fiesta
-    strcpy(f.descripcion, "fiesta del trigo");
-    strcpy(f.nombre, "fiesta del trigo");
-    strcpy(f.fechainicio, "18/01/14");
-    strcpy(f.fechafin, "18/02/14");
-    f.idfiesta= 1;
-    fiestas = fopen ("fiestas", "wb");
-    fwrite(&f,sizeof(struct fiesta),1,fiestas);
-    //otra fiesta
-    strcpy(fie.descripcion, "fiesta carnaval");
-    strcpy(fie.nombre, "fiesta con mucha comida");
-    strcpy(fie.fechainicio, "18/09/14");
-    strcpy(fie.fechafin, "18/11/14");
-    fie.idfiesta= 2;
-    fwrite(&fie,sizeof(struct fiesta),1,fiestas);
-    fclose(fiestas);
     //registro de USUARIOFIESTA
     usuarioFiesta = fopen ("usuarioFiesta", "wb");
     uf.idfiesta=1;
@@ -133,7 +147,7 @@ int main(int argc,char* argv[])
     opcion3=4;
     opcion4=4;
     opcion5=4;
-    
+
     int verificador=0;
     int usuarioincorrecto=0;
     int idf;
@@ -157,6 +171,7 @@ int main(int argc,char* argv[])
         case 2:
             listadoGeneralFiesta(fiestas);
             fclose (fiestas);
+            break;
         case 1:
     while (verificador==0){
     while (estaEnLaFiesta==0){
@@ -214,8 +229,12 @@ int main(int argc,char* argv[])
     }
     }
     if (verificador==1){
+    verificador=0;
+    estaEnLaFiesta=0;
+    usuarioincorrecto=0;
     printf("Se inicio sesion correctamente\n");
     fclose(usuarios);
+    opcion =4;
     while (opcion !=0){
 
     printf("                                      CrazyFiesta                                    \n");
@@ -226,11 +245,9 @@ int main(int argc,char* argv[])
     printf(" 2.- Fiestas\n");
     printf(" 3.- Productos\n");
     printf(" 4.- Proveedores\n");
-    printf(" 0.- Salir\n");
+    printf(" 0.- Cerrar sesion\n");
     scanf ("%d", &opcion);
     switch(opcion){
-    	case 0:
-    	return;
         case 1:
             while(opcion2!=0){
                  SetColor(2);
@@ -300,7 +317,7 @@ int main(int argc,char* argv[])
                 fiestas = fopen ("fiestas","rb+");
                 usuarioFiesta = fopen("usuarioFiesta", "rb+");
                 IDactualFiesta= fopen("idfiestas","rb+");
-                AltaFiesta(IDactualFiesta, fiestas,usuarioFiesta,u);
+                AltaFiesta(IDactualFiesta, fiestas,usuarioFiesta,u,fechaActual);
                 fclose(IDactualFiesta);
                 fclose(fiestas);
                 fclose(usuarioFiesta);
@@ -321,7 +338,7 @@ int main(int argc,char* argv[])
                 fiestas = fopen("fiestas", "rb+");
                 usuarios = fopen("usuarios", "rb");
                 usuarioFiesta = fopen("usuarioFiesta", "rb+");
-                BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta,t);
+                BajaFiesta(u, f, fiestas, usuarios,usuarioFiesta,fechaActual);
                 fclose(fiestas);
                 fclose(usuarios);
                 fclose(usuarioFiesta);
@@ -410,10 +427,9 @@ int main(int argc,char* argv[])
                 fclose(proveedores);
                 break;
                  }
-}break;
-    }
-    }}}}}
-    
+}
+    }}}}}}
+
 void dardebajaproveedor(FILE *proveedores);
 void modificarProveedor(FILE *proveedores);
 void listadoproveedores(FILE *proveedores);
@@ -426,11 +442,11 @@ int verificarMail (char mail[], FILE *usuarioFiesta,int);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
 void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
-void AltaFiesta (FILE* IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u);
-void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, char tiempo[]);
+void AltaFiesta (FILE* IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u,struct fecha actual);
+void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, struct fecha);
 int EsAdministrador(struct usuario u, FILE *usuarios);
 void dardebaja(struct usuario u,FILE *usuarios, FILE *usuarioFiesta);
-int fiestaActiva(char tiempo[],int idf,FILE *fiestas);
+int fiestaActiva(struct fecha,int idf,FILE *fiestas);
 void ModificarFiesta(struct fiesta f, FILE *fiestas);
 void SetColor(int);
 void registrarUsuario(struct usuario, FILE *usuarios,FILE *usuarioFiesta, FILE *fiestas);
@@ -442,6 +458,7 @@ void mostrarProductos(struct producto p);
 void ModificarProducto(struct producto p, FILE *productos);
 void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
+int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 
 void dardebajaproveedor(FILE *proveedores){
 int caux,aux=0,x;
@@ -648,7 +665,8 @@ void listadoGeneralFiesta(FILE *fiestas){
     struct fiesta fies;
     fread(&fies,sizeof(struct fiesta),1,fiestas);
         while ( !feof(fiestas)){
-        mostrarFiestas(fies);
+                if (fies.idfiesta>0){
+        mostrarFiestas(fies);}
         fread(&fies,sizeof(struct fiesta),1,fiestas);
 }
 }
@@ -710,9 +728,12 @@ while(!feof(fiestas)){
                  case 2:
                     printf("          Modificar fecha inicio           \n");
                     printf("______________________________________________\n");
-                    printf("Ingrese la nueva fecha de inicio en formato dd/mm/aa: \n");
-                    scanf("%s", fechainicio);
-                    strcpy(fie.fechainicio, fechainicio);
+                    printf("Ingrese el dia de inicio de la fiesta en formato dd: ");
+                    scanf("%d", &fie.fechainicio.dia);
+                    printf("Ingrese el mes de inicio de la fiesta en formato mm: ");
+                    scanf("%d", &fie.fechainicio.mes);
+                    printf("Ingrese el año de inicio de la fiesta en formato aa:  ");
+                    scanf("%d", &fie.fechainicio.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
                     SetColor(8);
@@ -724,12 +745,15 @@ while(!feof(fiestas)){
                  case 3:
                     printf("         Modificar fecha fin               \n");
                     printf("______________________________________________\n");
-                    printf("Ingrese la nueva fecha de fin en formato dd/mm/aa: \n");
-                    scanf("%s", &fechafin);
-                    strcpy(fie.fechafin, fechafin);
+                    printf("Ingrese el dia de fin de la fiesta en formato dd: ");
+                    scanf("%d", &fie.fechafin.dia);
+                    printf("Ingrese el mes de fin de la fiesta en formato mm: ");
+                    scanf("%d", &fie.fechafin.mes);
+                    printf("Ingrese el año de fin de la fiesta en formato aa:  ");
+                    scanf("%d", &fie.fechafin.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
-                    printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
+                    printf("La modificacion de la fecha de fin se ha realizado correctamente.\n");
 
                     break;
 
@@ -840,7 +864,7 @@ else {
     }
 }}
 
-void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, char tiempo[]){
+void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, struct fecha actual){
     struct fiesta fie;
     struct usuariofiesta uf,uf1;
     int idf;
@@ -852,7 +876,7 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     //if (EsAdministrador(u, usuarios)==1){
         printf("Ingrese el ID de la fiesta que desea dar de baja: ");
         scanf("%d", &idf);
-        if (fiestaActiva(tiempo,idf,fiestas)==0){
+        if (fiestaActiva(actual,idf,fiestas)==0){
         rewind(fiestas);
         fread(&fie, sizeof(struct fiesta), 1, fiestas);
         while(!feof(fiestas)){
@@ -891,13 +915,16 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
     //}
 
-int fiestaActiva(char tiempo[],int idf,FILE *fiestas){
+int fiestaActiva(struct fecha actual,int idf,FILE *fiestas){
     struct fiesta fie;
     fread(&fie, sizeof(struct fiesta), 1, fiestas);
     while (!feof(fiestas)){
         if (fie.idfiesta== idf){
-            if (strcmp(tiempo,fie.fechafin)==1)
-                return 1;
+                if (fie.fechafin.year== actual.year && fie.fechafin.mes>=actual.mes){
+                    if (fie.fechafin.mes==actual.mes && fie.fechafin.dia>=actual.dia){
+                        return 1;
+                    }
+                }
         }
     fread(&fie, sizeof(struct fiesta), 1, fiestas);
     }
@@ -912,35 +939,53 @@ else
         return 0;
 }
 
-void AltaFiesta (FILE *IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u){
+void AltaFiesta (FILE *IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u,struct fecha actual){
     struct fiesta f;
     struct usuariofiesta uf;
     int con;
     printf("Escriba el nombre de la fiesta: ");
     fflush(stdin);
     gets(f.nombre);
-    printf("Ingrese la fecha inicio de la fiesta en formato dd/mm/aa: ");
-    scanf("%s", &f.fechainicio);
-    printf("Ingrese la fecha fin de la fiesta en formato dd/mm/aa: ");
-    scanf("%s", &f.fechafin);
+    printf("Ingrese la fecha de inicio de la fiesta en formato dd/mm/aa: ");
+    scanf ("%d/%d/%d",&f.fechainicio.dia, &f.fechainicio.mes,&f.fechainicio.year);
+    printf("Ingrese la fecha de fin de la fiesta en formato dd/mm/aa: ");
+    scanf ("%d/%d/%d",&f.fechafin.dia, &f.fechafin.mes,&f.fechafin.year);
     printf("Ingrese una breve descripcion de la fiesta: ");
     fflush(stdin);
     gets(f.descripcion);
-    fread(&con,sizeof(int),1,IDactualFiesta);
-    con= con+1;
-    fseek(IDactualFiesta,-1*sizeof(int),SEEK_CUR);
-    fwrite(&con,sizeof (int),1,IDactualFiesta);
-    f.idfiesta=  con;
-    uf.idfiesta= f.idfiesta;
-    strcpy(uf.mail, u.mail);
-    fseek(fiestas, 0,SEEK_END);
-    fseek(usuarioFiesta,0,SEEK_END);
-    fwrite(&f,sizeof(struct fiesta),1, fiestas);
-    fwrite(&uf,sizeof(struct usuariofiesta),1, usuarioFiesta);
-    SetColor(8);
-    printf("La fiesta se ha creado con exito.\n");
-    SetColor(15);
+    if (mismoNombre(fiestas,f,actual)==1){
+        fread(&con,sizeof(int),1,IDactualFiesta);
+        con= con+1;
+        fseek(IDactualFiesta,-1*sizeof(int),SEEK_CUR);
+        fwrite(&con,sizeof (int),1,IDactualFiesta);
+        f.idfiesta=  con;
+        uf.idfiesta= f.idfiesta;
+        rewind (fiestas);
+        strcpy(uf.mail, u.mail);
+        fseek(fiestas, 0,SEEK_END);
+        fseek(usuarioFiesta,0,SEEK_END);
+        fwrite(&f,sizeof(struct fiesta),1, fiestas);
+        fwrite(&uf,sizeof(struct usuariofiesta),1, usuarioFiesta);
+        SetColor(8);
+        printf("La fiesta se ha creado con exito.\n");
+        SetColor(15);
+        }else{
+        printf ("El nombre de la fiesta que ingreso ya esta en uso y se encuentra activa\n");}
 }
+
+int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual){
+    struct fiesta f;
+    fread(&f,sizeof(struct fiesta),1, fiestas);
+    while (!feof(fiestas)){
+        if (strcmp(f.nombre,fie.nombre)==0){
+                if (f.fechafin.year== actual.year && f.fechafin.mes>=actual.mes && f.fechafin.dia>=actual.dia){
+                        return 0;
+        }}
+        fread(&f,sizeof(struct fiesta),1, fiestas);
+    }
+    return 1;
+}
+
 
 void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta uf3,uf4;
@@ -987,11 +1032,11 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
 }
 
 void mostrarFiestas(struct fiesta f){
-    printf("fechainicio %s", f.fechainicio);
-    printf("\nfechafin %s", f.fechafin);
-    printf("\nidfiesta %d", f.idfiesta);
-    printf("\ndescripcion %s", f.descripcion);
-    printf("\nnombre %s\n\n", f.nombre);
+    printf("fechainicio: %d/%d/%d", f.fechainicio.dia, f.fechainicio.mes, f.fechainicio.year);
+    printf("\nfechafin: %d/%d/%d", f.fechafin.dia, f.fechafin.mes, f.fechafin.year);
+    printf("\nidfiesta: %d", f.idfiesta);
+    printf("\ndescripcion: %s", f.descripcion);
+    printf("\nnombre: %s\n\n", f.nombre);
 }
 
 void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE *fiestas){
@@ -1174,7 +1219,6 @@ void SetColor(int ForgC)
  }
  return;
 }
-
 
 
 void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p){
