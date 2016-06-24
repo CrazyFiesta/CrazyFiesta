@@ -270,6 +270,7 @@ int main(int argc,char* argv[])
     scanf ("%d", &opcion);
     switch(opcion){
         case 1:
+    	    opcion2=4;
             while(opcion2!=0){
                  SetColor(3);
                  printf("****************************************************************************\n");
@@ -320,6 +321,7 @@ int main(int argc,char* argv[])
     }
     break;
         case 2:
+        	opcion3=4;
                  while(opcion3!=0){
                  SetColor(3);
                  printf("****************************************************************************\n");
@@ -372,6 +374,7 @@ int main(int argc,char* argv[])
                 }
                 break;
      case 3:
+     		opcion4=4;
                 while(opcion4!=0){
                     SetColor(3);
                     printf("****************************************************************************\n");
@@ -416,6 +419,7 @@ int main(int argc,char* argv[])
                 }
                 break;
                 case 4:
+                	opcion5=4;
                     while(opcion5!=0){
                     SetColor(3);
                     printf("****************************************************************************\n");
