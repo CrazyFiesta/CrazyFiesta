@@ -460,7 +460,7 @@ int main(int argc,char* argv[])
                 fclose(proveedores);
                 break;
                  }
-}break;
+} break;
     }}}}}}
 
 void dardebajaproveedor(FILE *proveedores);
@@ -895,7 +895,10 @@ char aux[]="administrador";
 int esven = 0,esadm = 0, coinc=0,idfaux;
 int x;
 
-printf("Ingrese el mail del usuario que quiere dar de baja: \n");
+printf("Ingrese el mail del usuario que quiere dar de baja\n");
+SetColor(8);
+printf("(Puede ver el listado de usuarios para ver el mail del usuario):\n");
+SetColor(15);
 scanf("%s",mail);
 fflush(stdin);
 
@@ -972,7 +975,10 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     char marca [21];
     strcpy(marca,"(FIESTA ELIMINADA)");
     //if (EsAdministrador(u, usuarios)==1){
-        printf("Ingrese el ID de la fiesta que desea dar de baja: ");
+        printf("Ingrese el ID de la fiesta que desea dar de baja\n");
+        SetColor(8);
+        printf("(Puede ver el listado de fiestas para ver el ID):\n");
+        SetColor(15);
         scanf("%d", &idf);
         if (fiestaActiva(actual,idf,fiestas)==0){
         rewind(fiestas);
