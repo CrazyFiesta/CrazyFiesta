@@ -14,7 +14,7 @@ struct usuario{
 	};
 
 struct proveedor{
-int cuil;
+long long int cuil;
 char nombreempresa[50];
 char mail[50];
 };
@@ -83,7 +83,7 @@ int main(int argc,char* argv[])
     fechaActual.year = atoi(year);
 
 
-   /* strcpy(f.descripcion, "fiesta del trigo");
+    strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
     f.fechainicio.mes = 06;
@@ -92,21 +92,20 @@ int main(int argc,char* argv[])
     f.fechafin.mes = 06;
     f.fechafin.year = 16;
     f.idfiesta= 1;
-    fiestas = fopen ("fiestas", "wb");
+  /* fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
     fclose (fiestas);
-
     //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
     int contadordeID= 3;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
-   /* //ID actual del producto creando
+    //ID actual del producto creando
     IDactualProducto= fopen("idproductos", "wb");
-    int contadordeID= 2;
+    int contadordeID2= 2;
     fwrite(&contadordeID, sizeof(int),1,IDactualProducto);
     fclose(IDactualProducto);
-   /* //Registro de producto
+    //Registro de producto
     prod.idproducto = 1;
     strcpy(prod.nombre, "Gaseosas");
     prod.precio = 15,45;
@@ -114,7 +113,6 @@ int main(int argc,char* argv[])
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
-
     //Registro de proveedor
     p.cuil=27382916137;
     strcpy(p.nombreempresa,"Arcor");
@@ -122,7 +120,6 @@ int main(int argc,char* argv[])
     proveedores = fopen("proveedores","wb");
     fwrite(&p,sizeof(struct proveedor),1,proveedores);
     fclose(proveedores);
-
     //registro de usuario
     strcpy(u.nombre, "juan");
     strcpy(u.mail,"juan@hotmail.com");
@@ -132,8 +129,8 @@ int main(int argc,char* argv[])
     u.dni= 40254875;
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
-    fclose(usuarios);/*
-    //registro de USUARIOFIESTA
+    fclose(usuarios);
+   //registro de USUARIOFIESTA
     usuarioFiesta = fopen ("usuarioFiesta", "wb");
     uf.idfiesta=1;
     strcpy(uf.mail,u.mail);
@@ -141,7 +138,7 @@ int main(int argc,char* argv[])
     strcpy(uparty.mail,u.mail);
     fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    fclose(usuarioFiesta);*/
+    fclose(usuarioFiesta); */
     opcion= 4;
     opcion2=4;
     opcion3=4;
@@ -186,7 +183,9 @@ int main(int argc,char* argv[])
         fread(&f,sizeof(struct fiesta),1,fiestas);
       }
     if (estaEnLaFiesta==0){
-        printf("esa ID de fiesta no existe\n");
+        SetColor(4);
+        printf("Esa ID de fiesta no existe\n");
+        SetColor(15);
     }
       }
     fclose(fiestas);
@@ -217,22 +216,28 @@ int main(int argc,char* argv[])
         fread(&usu, sizeof(struct usuario),1, usuarios);
     }
     if (usuarioincorrecto==1&& verificador==0){
-        printf("email incorrecto o no existe\n");
+        SetColor(4);
+        printf("Email incorrecto o no existe\n");
+    SetColor(15);
     }
 
     if (u.dni==-1){
-        printf("contraseña incorrecta\n");
+        SetColor(4);
+        printf("Contraseña incorrecta\n");
+        SetColor(15);
     }
 
     if (u.dni!=-1 && verificador==0){
-        printf ("su usuario no tiene ningun permiso en la fiesta que ingreso\n");
+        printf ("Su usuario no tiene ningun permiso en la fiesta que ingreso\n");
     }
     }
     if (verificador==1){
     verificador=0;
     estaEnLaFiesta=0;
     usuarioincorrecto=0;
+    SetColor(2);
     printf("Se inicio sesion correctamente\n");
+    SetColor(15);
     fclose(usuarios);
     opcion =4;
     while (opcion !=0){
@@ -461,7 +466,8 @@ void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 
 void dardebajaproveedor(FILE *proveedores){
-int caux,aux=0,x;
+int aux=0,x,sum=0;
+long long int caux,aux2;
 char marca[25];
 strcpy(marca, "(Proveedor eliminado)");
 struct proveedor p4;
@@ -470,14 +476,18 @@ SetColor(8);
 printf("Ingrese el cuil del proveedor que desea dar de baja: \n");
 printf("(Ingrese solo numeros, sin el signo '-'):\n");
 printf("(Puede ver el cuil de los proveedores en el listado de proveedores)\n");
-scanf("%d",&caux);
-SetColor(15);
-
+scanf("%lld",&caux);
+aux2 = caux;
+    while(aux2 > 0){
+    aux2=aux2/10;
+    sum = sum + 1;
+    }
+if (sum==11){
 fread(&p4,sizeof(struct proveedor),1,proveedores);
 while (!feof(proveedores)){
     if (p4.cuil == caux){
         aux = 1;
-        printf("El cuil del proveedor que desea eliminar es %d \n", p4.cuil);
+        printf("El cuil del proveedor que desea eliminar es %lld \n", p4.cuil);
         SetColor(14);
         printf("Seguro que desea dar de baja este proveedor?\nPresione 1 para confirmar o cualquier otro numero para cancelar\n");
         SetColor(15);
@@ -487,7 +497,7 @@ while (!feof(proveedores)){
             strcpy(p4.nombreempresa, strcat(p4.nombreempresa, marca));
                         fseek(proveedores,-1*sizeof(struct proveedor),SEEK_CUR);
                                     fwrite(&p4,sizeof(struct proveedor),1,proveedores);
-          SetColor(8);
+          SetColor(2);
             printf("La baja se ha realizado correctamente.\n");
             SetColor(15);
 
@@ -498,7 +508,14 @@ while (!feof(proveedores)){
     }
     fread(&p4,sizeof(struct proveedor),1,proveedores);
 
+}}
+else {
+    SetColor(4);
+    printf("Cuil incorrecto. El cuil ingresado no tiene 11 digitos \n");
+SetColor(15);
+    return;
 }
+
 if (aux ==0){
             SetColor(4);
 
@@ -510,17 +527,26 @@ return;
 }
 
 void modificarProveedor(FILE *proveedores){
-int caux,x,opcion =4,caux2,aux;
+int x,opcion =4,aux=0,sum=0;
+long long int caux,caux2,aux2;
 struct proveedor p3;
+rewind(proveedores);
 printf("Ingrese el cuil del proveedor que desea modificar: \n");
 printf("(Ingrese solo numeros, sin el signo '-'):\n");
-scanf("%d",&caux);
-rewind(proveedores);
+scanf("%lld",&caux);
+aux2 = caux;
+    while(aux2 > 0){
+    aux2=aux2/10;
+    sum = sum + 1;
+    }
+if (sum==11){
+
+
 fread(&p3,sizeof(struct proveedor),1,proveedores);
 while(!feof(proveedores)){
     if (p3.cuil==caux){
             aux=1;
-            printf("El cuil del proveedor que desea modificar es: %d\n", p3.cuil);
+            printf("El cuil del proveedor que desea modificar es: %lld\n", p3.cuil);
             SetColor(14);
             printf("Seguro que desea modificar este proveedor?\nPresione 1 para confirmar o cualquier otro numero para cancelar\n");
             SetColor(15);
@@ -539,7 +565,7 @@ while(!feof(proveedores)){
                 scanf("%d", &opcion);
                 switch(opcion){
                 case 0:
-                break;
+                return;
                 case 1:
                 SetColor(2);
                 printf("                        Modificar cuil                            \n");
@@ -549,13 +575,28 @@ while(!feof(proveedores)){
                 fflush(stdin);
 
                 printf("Ingrese el nuevo cuil: \n");
-                scanf("%d",&caux2);
+                scanf("%lld",&caux2);
+                aux2 = caux2;
+                sum = 0;
+               while(aux2 > 0){
+               aux2=aux2/10;
+               sum = sum + 1;
+               }
+               if (sum==11){
                 p3.cuil=caux2;
                fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
                fwrite(&p3, sizeof(struct proveedor),1,proveedores);
-                SetColor(8);
+                SetColor(2);
                 printf("La modificacion del cuil se ha realizado correctamente.\n");
+                SetColor(15);
                 break;
+               }
+               else {
+                    SetColor(4);
+                    printf("El cuil ingresado no tiene 11 digitos \n");
+                    SetColor(15);
+               return;
+               }
                 case 2:
                     SetColor(2);
                 printf("                        Modificar nombre de la empresa                                \n");
@@ -567,8 +608,9 @@ while(!feof(proveedores)){
                 gets(p3.nombreempresa);
                 fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
                 fwrite(&p3, sizeof(struct proveedor),1,proveedores);
-                SetColor(8);
+                SetColor(2);
                 printf("La modificacion del nombre de la empresa se ha realizado correctamente.\n");
+                SetColor(15);
                 break;
                 }
     }
@@ -576,6 +618,12 @@ while(!feof(proveedores)){
     else return;
     }
     fread(&p3, sizeof(struct proveedor),1, proveedores);
+}}
+else {
+    SetColor(4);
+    printf("El cuil ingresado no tiene 11 digitos \n");
+SetColor(15);
+    return;
 }
 
 if(aux==0){
@@ -600,7 +648,7 @@ printf("________________________________________________________________________
 fread(&p2,sizeof(struct proveedor),1,proveedores);
 
 while (!feof(proveedores)){
-    printf("Cuil: %d            Nombre de la empresa: %s\n",p2.cuil,p2.nombreempresa);
+    printf("Cuil: %lld            Nombre de la empresa: %s\n",p2.cuil,p2.nombreempresa);
     fread(&p2,sizeof(struct proveedor),1,proveedores);
 
 }
@@ -608,44 +656,58 @@ while (!feof(proveedores)){
 }
 
 void AltaProveedor(FILE *proveedores,FILE *usuarios){
-struct proveedor p1;
-
+struct proveedor p1,p2;
+long long int aux;
+int sum = 0,existe=0;
 printf("Ingrese el cuil del proveedor que desea dar de alta: \n");
 printf("(Ingrese solo numeros, sin el signo '-'):\n");
-scanf("%d",&p1.cuil);
+scanf("%lld",&p1.cuil);
 fflush(stdin);
-
-printf("Ingrese el nombre de la empresa de la cual forma parte el proveedor:\n");
-fflush(stdin);
-gets(p1.nombreempresa);
-
-printf("Ingrese su mail:\n");
-scanf("%s",p1.mail);
-fflush(stdin);
-
-if (verificarexistenciamail(p1, usuarios)==0) {
-
+aux = p1.cuil;
+ while(aux > 0){
+        aux=aux/10;
+        sum = sum + 1;
+    }
+if (sum==11){
+        rewind(proveedores);
+        fread(&p2,sizeof(struct proveedor),1,proveedores);
+        while (!feof(proveedores)){
+                if (p2.cuil == p1.cuil){
+                    existe=1;
+                }
+                    fread(&p2,sizeof(struct proveedor),1,proveedores);
+        }
+        if (existe == 1){
+            SetColor(4);
+            printf("El cuil ingresado ya se encuentra registrado en el sistema \n");
+        SetColor(15);
+            return;
+        }
+        else {
+         printf("Ingrese el nombre de la empresa de la cual forma parte el proveedor:\n");
+         fflush(stdin);
+         gets(p1.nombreempresa);
+        printf("Ingrese su mail:\n");
+         scanf("%s",p1.mail);
+        fflush(stdin);
+        if (verificarexistenciamail(p1, usuarios)==0) {
         fseek(proveedores, 0, SEEK_END);
         fwrite(&p1, sizeof(struct proveedor),1, proveedores);
-
         SetColor(2);
-
         printf("El proveedor se ha dado de alta correctamente\n");
+        SetColor(15); }
+        else {
+        SetColor(4);
+        printf("El mail ingresado no es correcto\n");
         SetColor(15);
-
-
-
+        return; }
+        }
 }
 else {
-        SetColor(4);
-
-        printf("El mail ingresado no es correcto\n");
-                SetColor(15);
-
-return;
-}
-
-}
+    SetColor(4);
+        printf("Error. El cuil ingresado no tiene 11 digitos \n");
+SetColor(15);
+}}
 
 int verificarexistenciamail(struct proveedor p1,FILE* usuarios){
 rewind(usuarios);
@@ -719,7 +781,7 @@ while(!feof(fiestas)){
                      strcpy(fie.nombre, nombre);
                      fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                      fwrite(&fie, sizeof(struct fiesta),1, fiestas);
-                     SetColor(8);
+                     SetColor(2);
                      printf("La modificacion del nombre se ha realizado correctamente.\n");
                      SetColor(15);
 
@@ -736,7 +798,7 @@ while(!feof(fiestas)){
                     scanf("%d", &fie.fechainicio.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta),1, fiestas);
-                    SetColor(8);
+                    SetColor(2);
                     printf("La modificacion de la fecha de inicio se ha realizado correctamente.\n");
                     SetColor(15);
 
@@ -753,7 +815,9 @@ while(!feof(fiestas)){
                     scanf("%d", &fie.fechafin.year);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
+                    SetColor(2);
                     printf("La modificacion de la fecha de fin se ha realizado correctamente.\n");
+                    SetColor(15);
 
                     break;
 
@@ -766,7 +830,7 @@ while(!feof(fiestas)){
                     strcpy(fie.descripcion, descripcion);
                     fseek(fiestas, -1*sizeof(struct fiesta), SEEK_CUR);
                     fwrite(&fie, sizeof(struct fiesta), 1, fiestas);
-                    SetColor(8);
+                    SetColor(2);
                     printf("La modificacion de la descripcion se ha realizado correctamente.\n");
                     SetColor(15);
 
@@ -892,7 +956,9 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
                             strcpy(fie.descripcion,strcat(fie.descripcion,  marca));
                             fseek(fiestas,-1*sizeof(struct fiesta),SEEK_CUR);
                             fwrite(&fie,sizeof(struct fiesta),1,fiestas);
+                            SetColor(2);
                             printf("La baja de fiesta se ha realizado correctamente \n");
+                            SetColor(15);
                             fread(&uf, sizeof(struct usuariofiesta), 1, usuarioFiesta);
 
                             break;
@@ -966,11 +1032,13 @@ void AltaFiesta (FILE *IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct 
         fseek(usuarioFiesta,0,SEEK_END);
         fwrite(&f,sizeof(struct fiesta),1, fiestas);
         fwrite(&uf,sizeof(struct usuariofiesta),1, usuarioFiesta);
-        SetColor(8);
+        SetColor(2);
         printf("La fiesta se ha creado con exito.\n");
         SetColor(15);
         }else{
-        printf ("El nombre de la fiesta que ingreso ya esta en uso y se encuentra activa\n");}
+        SetColor(4);
+        printf ("El nombre de la fiesta que ingreso ya esta en uso y se encuentra activa\n");
+        SetColor(15); }
 }
 
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual){
@@ -1047,7 +1115,9 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
     printf("(Puede pedir el listado de fiestas para obtener el id):\n ");
     scanf("%d", &idf);
     if (verificarf(idf,fiestas)==0){
+            SetColor(4);
             printf("La fiesta ingresada no existe \n");
+    SetColor(15);
             return;
     }
     else {
@@ -1074,6 +1144,9 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
             fseek(usuarioFiesta,0,SEEK_END);
             fwrite(&usu, sizeof(struct usuario), 1, usuarios);
             fwrite(&uf, sizeof(struct usuariofiesta), 1, usuarioFiesta);
+            SetColor(2);
+            printf("El usuario se ha creado correctamente \n");
+            SetColor(15);
              }
             else {
         	SetColor(4);
@@ -1263,8 +1336,10 @@ void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p){
     p.idproducto= con;
     fseek(productos, 0, SEEK_END);
     fwrite(&p, sizeof(struct producto),1, productos);
-    SetColor(8);
+    SetColor(2);
     printf("El producto se ha creado con exito.\n");
+    SetColor(15);
+
 }
 
 void listadoProducto(struct producto p, FILE *productos){
@@ -1329,8 +1404,9 @@ while(!feof(productos)){
                 gets(prod.nombre);
                 fseek(productos, -1*sizeof(struct producto), SEEK_CUR);
                 fwrite(&prod, sizeof(struct producto),1,productos);
-                SetColor(8);
+                SetColor(2);
                 printf("La modificacion del nombre se ha realizado correctamente.\n");
+                SetColor(15);
 
                 break;
 
@@ -1345,9 +1421,9 @@ while(!feof(productos)){
                 prod.precio=pre;
                 fseek(productos, -1*sizeof(struct producto), SEEK_CUR);
                 fwrite(&prod, sizeof(struct producto),1,productos);
-                SetColor(8);
+                SetColor(2);
                 printf("La modificacion del precio se ha realizado correctamente.\n");
-
+                SetColor(15);
                 break;
 
             case 3:
@@ -1361,7 +1437,7 @@ while(!feof(productos)){
                 prod.stock=stock;
                 fseek(productos, -1*sizeof(struct producto), SEEK_CUR);
                 fwrite(&prod, sizeof(struct producto),1,productos);
-                SetColor(8);
+                SetColor(2);
                 printf("La modificacion del nombre se ha realizado correctamente.\n");
                 SetColor(15);
 
@@ -1411,7 +1487,7 @@ while(!feof(productos)){
             strcpy(prod.nombre, strcat(prod.nombre, marca));
             fseek(productos,-1*sizeof(struct producto),SEEK_CUR);
             fwrite(&prod,sizeof(struct producto),1,productos);
-            SetColor(8);
+            SetColor(2);
             printf("La baja se ha realizado correctamente.\n");
             SetColor(15);
 
