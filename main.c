@@ -460,7 +460,7 @@ int main(int argc,char* argv[])
                 fclose(proveedores);
                 break;
                  }
-}
+}break;
     }}}}}}
 
 void dardebajaproveedor(FILE *proveedores);
