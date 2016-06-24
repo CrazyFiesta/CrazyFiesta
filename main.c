@@ -83,7 +83,7 @@ int main(int argc,char* argv[])
     fechaActual.year = atoi(year);
 
 
-    strcpy(f.descripcion, "fiesta del trigo");
+    /*strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
     f.fechainicio.mes = 06;
@@ -156,8 +156,17 @@ int main(int argc,char* argv[])
     int elegir=4;
     while (elegir!=0){
     fiestas = fopen ("fiestas","rb");
-    printf("                          CrazyFiesta                     \n");
-    printf("##########################################################\n");
+    SetColor(2);
+    printf("        # # # # # # # # # # # # # # # # # \n");
+    printf("        #                               # \n");
+    printf("        #");
+    SetColor(10);
+    printf("           CrazyFiesta         ");
+    SetColor(2);
+    printf("#\n");
+    printf("        #                               #\n");
+    printf("        # # # # # # # # # # # # # # # # # \n\n");
+    SetColor(15);
     printf(" 1.- Iniciar sesion\n");
     printf(" 2.- Listado de Fiestas\n");
     printf(" 0.- Salir\n");;
@@ -173,6 +182,9 @@ int main(int argc,char* argv[])
     while (verificador==0){
     while (estaEnLaFiesta==0){
     printf("Ingrese la ID de la fiesta en la que desea iniciar sesion\n");
+    SetColor(8);
+    printf("(Puede ver el listado de fiestas para buscar la ID):\n");
+    SetColor(15);
     scanf("%d", &idf);
     rewind (fiestas);
     fread(&f,sizeof(struct fiesta),1,fiestas);
@@ -191,7 +203,7 @@ int main(int argc,char* argv[])
     fclose(fiestas);
     printf("Ingrese su email con el que desea iniciar sesion\n");
     scanf ("%s", &mail);
-    printf("Ingrese la contraseña de su cuenta\n");
+    printf("Ingrese la contrasena de su cuenta\n");
     scanf ("%s", &contra);
     usuarios = fopen("usuarios","rb");
     rewind(usuarios);
@@ -241,10 +253,14 @@ int main(int argc,char* argv[])
     fclose(usuarios);
     opcion =4;
     while (opcion !=0){
-
-    printf("                                      CrazyFiesta                                    \n");
     SetColor(3);
-    printf("######################################################################################\n");
+    printf("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n");
+    printf("#");
+    SetColor(10);
+    printf("                                   CrazyFiesta                             ");
+    SetColor(3);
+    printf("#\n");
+    printf("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n\n");
     SetColor(15);
     printf(" 1.- Usuarios\n");
     printf(" 2.- Fiestas\n");
@@ -255,10 +271,12 @@ int main(int argc,char* argv[])
     switch(opcion){
         case 1:
             while(opcion2!=0){
-                 SetColor(2);
-                 printf("                             Usuarios                                         \n");
                  SetColor(3);
-                 printf("________________________________________________________________________________\n");
+                 printf("****************************************************************************\n");
+                 SetColor(2);
+                 printf("                             Usuarios                                   \n");
+                 SetColor(3);
+                 printf("****************************************************************************\n");
                  SetColor(15);
                  printf(" 1.- Registrar un usuario\n");
                  printf(" 2.- Modificar contraseña\n");
@@ -303,10 +321,12 @@ int main(int argc,char* argv[])
     break;
         case 2:
                  while(opcion3!=0){
-                 SetColor(2);
-                 printf("                            Fiestas                                         \n");
                  SetColor(3);
-                 printf("________________________________________________________________________________\n");
+                 printf("****************************************************************************\n");
+                 SetColor(2);
+                 printf("                            Fiestas                                     \n");
+                 SetColor(3);
+                 printf("****************************************************************************\n");
                  SetColor(15);
                  printf(" 1.- Dar de Alta Fiesta\n");
                  printf(" 2.- Listado de Fiestas\n");
@@ -353,10 +373,12 @@ int main(int argc,char* argv[])
                 break;
      case 3:
                 while(opcion4!=0){
-                    SetColor(2);
-                    printf("                            Productos                                         \n");
                     SetColor(3);
-                    printf("________________________________________________________________________________\n");
+                    printf("****************************************************************************\n");
+                    SetColor(2);
+                    printf("                            Productos                                   \n");
+                    SetColor(3);
+                    printf("****************************************************************************\n");
                     SetColor(15);
                     printf(" 1.- Dar de Alta Producto\n");
                     printf(" 2.- Listado de Producto\n");
@@ -395,10 +417,12 @@ int main(int argc,char* argv[])
                 break;
                 case 4:
                     while(opcion5!=0){
-                    SetColor(2);
-                    printf("                            Proveedores                                         \n");
                     SetColor(3);
-                    printf("________________________________________________________________________________\n");
+                    printf("****************************************************************************\n");
+                    SetColor(2);
+                    printf("                            Proveedores                                 \n");
+                    SetColor(3);
+                    printf("****************************************************************************\n");
                  SetColor(15);
                  printf(" 1.- Dar de Alta Proveedor\n");
                  printf(" 2.- Listado de Proveedores\n");
@@ -554,10 +578,12 @@ while(!feof(proveedores)){
             if(x==1){
 
            while(opcion !=0){
-                  SetColor(2);
+                SetColor(3);
+                printf("*******************************************************************\n");
+                SetColor(2);
                 printf("                       Modificar Proveedor                     \n");
                 SetColor(3);
-                printf("_________________________________________________________________\n");
+                printf("********************************************************************\n");
                 SetColor(15);
                 printf(" 1.- Modificar cuil\n");
                 printf(" 2.- Modificar nombre de la empresa\n");
@@ -567,10 +593,12 @@ while(!feof(proveedores)){
                 case 0:
                 return;
                 case 1:
-                SetColor(2);
-                printf("                        Modificar cuil                            \n");
                 SetColor(3);
-                printf("_______________________________________________________________________\n");
+                printf("********************************************************************\n");
+                SetColor(2);
+                printf("                        Modificar cuil                          \n");
+                SetColor(3);
+                printf("********************************************************************\n");
                 SetColor(15);
                 fflush(stdin);
 
@@ -598,10 +626,12 @@ while(!feof(proveedores)){
                return;
                }
                 case 2:
-                    SetColor(2);
-                printf("                        Modificar nombre de la empresa                                \n");
                 SetColor(3);
-                printf("__________________________________________________________________________\n");
+                printf("********************************************************************\n");
+                SetColor(2);
+                printf("                        Modificar nombre de la empresa          \n");
+                SetColor(3);
+                printf("********************************************************************\n");
                 SetColor(15);
                 fflush(stdin);
                 printf("Ingrese el nuevo nombre de la empresa: \n");
