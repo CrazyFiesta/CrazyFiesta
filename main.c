@@ -92,12 +92,12 @@ int main(int argc,char* argv[])
     f.fechafin.mes = 06;
     f.fechafin.year = 16;
     f.idfiesta= 1;
-  /* fiestas = fopen ("fiestas", "wb");
+   fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
     fclose (fiestas);
     //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
-    int contadordeID= 3;
+    int contadordeID= 2;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
     //ID actual del producto creando
@@ -1130,7 +1130,9 @@ void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
         fread(&fies,sizeof(struct fiesta),1,fiestas);
         while ( !feof(fiestas)){
            if (fies.idfiesta==usu.idfiesta){
+                if(fies.idfiesta>0){
                 mostrarFiestas(fies);
+                }
         }
         fread(&fies,sizeof(struct fiesta),1,fiestas);
       }
@@ -1152,7 +1154,9 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
     struct usuariofiesta uf,uf2;
     int idf,aux = 0;
     printf("Ingrese una id de una fiesta que quiera dar de alta al usuario.\n");
+    SetColor(8);
     printf("(Puede pedir el listado de fiestas para obtener el id):\n ");
+    SetColor(15);
     scanf("%d", &idf);
     if (verificarf(idf,fiestas)==0){
             SetColor(4);
@@ -1168,7 +1172,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
         if (verificarMail(usu.mail,usuarioFiesta,idf)== 0){
             printf("ingrese dni: ");
             scanf("%d", &usu.dni);
-            printf("ingrese contraseña: ");
+            printf("ingrese contrasena: ");
             scanf("%s", &usu.contrasena);
             printf("ingrese nombre: ");
             scanf("%s", &usu.nombre);
