@@ -115,7 +115,7 @@ int main(int argc,char* argv[])
     fclose(productos);
     //Registro de proveedor
     p.cuil=27382916137;
-    strcpy(p.nombreempresa,"Arcor");
+    strcpy(p.nombreempresa,"Coca Cola");
     strcpy(p.mail,"juan@hotmail.com");
     proveedores = fopen("proveedores","wb");
     fwrite(&p,sizeof(struct proveedor),1,proveedores);
@@ -1098,12 +1098,18 @@ int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual){
 void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta uf3,uf4;
     int pertenece,aux;
+    char mail[50];
     pertenece = 1;
     printf("Ingrese el id de la fiesta de la que quiere obtener los usuarios: \n");
     scanf("%d",&aux);
+    
+    fflush(stdin);
+    printf("Ingrese su mail: \n");
+    scanf("%s",mail);
+    
     while (!feof(usuarioFiesta)){
         fread(&uf3,sizeof(struct usuariofiesta),1,usuarioFiesta);
-        if ((uf3.idfiesta == aux) && ((strcmp(uf3.mail,u.mail))==0)){
+        if ((uf3.idfiesta == aux) && ((strcmp(uf3.mail,mail))==0)){
                   pertenece=0;
         }}
     if (pertenece==1){
