@@ -603,16 +603,14 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
                     compraProducto = fopen("compraProducto","rb+");
                     productos = fopen("productos","rb");
                     fiestas = fopen("fiestas","rb");
-                    usuarioFiesta=fopen("usuarioFiesta","rb");
                     proveedores=fopen("proveedores","rb");
                     IDactualCompra=fopen("idcompra","rb+");
-                    realizarcompra(compras,compraProducto,productos,fiestas,usuarioFiesta,proveedores,IDactualCompra);
+                    realizarcompra(compras,compraProducto,productos,fiestas,proveedores,IDactualCompra,u.mail);
 
                     fclose(compras);
                     fclose(productos);
                     fclose(compraProducto);
                     fclose(fiestas);
-                    fclose(usuarioFiesta);
                     fclose(proveedores);
                     fclose(proveedores);
                     fclose(IDactualCompra);
@@ -683,14 +681,12 @@ case 3:
                 case 1:
 
                  ventas = fopen("ventas","rb+");
-                 usuarioFiesta = fopen("usuarioFiesta","rb");
                  productos = fopen("productos","rb");
                  productoVenta = fopen("productoVenta","rb+");
                  fiestas = fopen ("fiestas","rb");
                  IDactualVenta = fopen("idventa","rb+");
-                 realizarventa(fiestas,usuarioFiesta,ventas,productos,productoVenta,IDactualVenta);
+                 realizarventa(fiestas,ventas,productos,productoVenta,IDactualVenta,u.mail);
                  fclose(ventas);
-                 fclose(usuarioFiesta);
                  fclose(IDactualVenta);
                  fclose(productos);
                  fclose(productoVenta);
@@ -736,8 +732,8 @@ void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 float esNumero();
-void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *usuarioFiesta,FILE *proveedores,FILE *IDactualCompra);
-void realizarventa(FILE *fiestas, FILE *usuarioFiesta, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta);
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char [50]);
+void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50]);
 void verdetalle(FILE *productos);
 
 void verdetalle(FILE *productos){
@@ -762,6 +758,7 @@ if (exisp==0){
 else {
 printf("\n");
 printf("\n");
+
 printf("Id del producto: %d \n",p2.idproducto);
 printf("Nombre del producto: %s \n",p2.nombre);
 printf("Precio del producto: %f \n",p2.precio);
@@ -771,15 +768,15 @@ printf("Stock del producto: %d \n",p2.stock);
 
 
 
-void realizarventa(FILE *fiestas,FILE *usuarioFiesta, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta){
+void realizarventa(FILE *fiestas,FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta, char mail[50]){
 struct fiesta f2;
 struct usuariofiesta uf2;
+struct usuario u2;
 float precioventaaux;
 struct venta v2;
 struct producto prod2;
 struct productoventa pv2;
 int idf,exisf=0,y=1,exisu=0,idp,exisprod=0,cant,con;
-char mail[50];
 printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
 scanf("%d",&idf);
 fread(&f2,sizeof(struct fiesta),1,fiestas);
@@ -797,26 +794,6 @@ return;
     SetColor(15);
 }
 else {
-rewind(usuarioFiesta);
-printf("Ingrese su mail: \n");
-scanf("%s",mail);
-fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
-while(!feof(usuarioFiesta)){
-    if(uf2.idfiesta==idf){
-       if ((strcmp(uf2.mail,mail))==0){
-            exisu=1;
-       }
-        }
-    fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
-}
-if (exisu==0){
-    printf("El mail no se encuentra registrado en el sistema o no se encuentra asociado a esa fiesta\n");
-}
-else{
-
-  fflush(stdin);
-  exisprod=0;
-    rewind(productos);
 printf("Ingrese id del producto que quiere vender: \n");
 printf("(Puede pedir el listado de productos para ver el id) \n");
 scanf("%d",&idp);
@@ -835,7 +812,7 @@ while(!feof(productos)){
  else {
     printf("Cuanta cantidad desea vender de este producto? \n");
 scanf("%d",&cant);
-if (cant<0){
+if (cant<=0){
     printf("La cantidad ingresada es incorrecta\n");
     return;
 }
@@ -890,11 +867,9 @@ char segundos[10];
     SetColor(2);
     printf("La venta se ha registrado correctamente.\n");
     SetColor(15);
-
     }
-}
 
-void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *usuarioFiesta,FILE *proveedores,FILE *IDactualCompra){
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50]){
 struct compraproducto cp2;
 struct compra c2;
 struct fiesta f2;
@@ -904,7 +879,6 @@ struct proveedor prov2;
 int idf,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con;
 long long int cuil,aux;
 int cant;
-char mail[50];
 rewind(IDactualCompra);
 fflush(stdin);
 printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
@@ -923,28 +897,10 @@ if (exisf==0){
     SetColor(15);
 }
 else {
+  fflush(stdin);
 
-rewind(usuarioFiesta);
-printf("Ingrese su mail: \n");
-scanf("%s",mail);
-fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
-while(!feof(usuarioFiesta)){
-    if(uf2.idfiesta==idf){
-       if ((strcmp(uf2.mail,mail))==0){
-
-            exisu=1;
-       }
-        }
-    fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
-}
-if (exisu==0){
-    printf("El mail no se encuentra registrado en el sistema o no se encuentra asociado a esa fiesta\n");
-}
-else {
-        fflush(stdin);
-
-        printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
-        printf("(Ingrese solo numeros, sin el signo '-':\n");
+printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
+  printf("(Ingrese solo numeros, sin el signo '-':\n");
 scanf("%lld",&cuil);
 fflush(stdin);
 aux = cuil;
@@ -987,7 +943,7 @@ if (exisprod==0){
 else{
 printf("Cuanta cantidad desea adquirir de este producto? \n");
 scanf("%d",&cant);
-if (cant<0){
+if (cant<=0){
     printf("La cantidad ingresada es incorrecta\n");
     return;
 }
@@ -1050,7 +1006,6 @@ else {
 SetColor(15);
 return;
 
-}
 }
 }
 }
