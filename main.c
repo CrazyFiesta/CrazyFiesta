@@ -732,14 +732,13 @@ void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 float esNumero();
-void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char [50]);
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char[50]);
 void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50]);
 void verdetalle(FILE *productos);
 
 void verdetalle(FILE *productos){
 int idp,exisp=0;
 struct producto p2;
-rewind(productos);
 printf("Ingrese el id del producto que quiere ver el detalle:\n");
 printf("(Puede ver el listado de ids de productos)\n");
 scanf("%d",&idp);
@@ -756,8 +755,6 @@ if (exisp==0){
     printf("El id de producto ingresado no existe\n");
 }
 else {
-printf("\n");
-printf("\n");
 
 printf("Id del producto: %d \n",p2.idproducto);
 printf("Nombre del producto: %s \n",p2.nombre);
@@ -768,15 +765,15 @@ printf("Stock del producto: %d \n",p2.stock);
 
 
 
-void realizarventa(FILE *fiestas,FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta, char mail[50]){
+
+void realizarventa(FILE *fiestas,FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char mail[50]){
 struct fiesta f2;
 struct usuariofiesta uf2;
-struct usuario u2;
-float precioventaaux;
+float precioventaaux,preciototalaux=0;
 struct venta v2;
 struct producto prod2;
 struct productoventa pv2;
-int idf,exisf=0,y=1,exisu=0,idp,exisprod=0,cant,con;
+int idf,exisf=0,y=1,exisu=0,idp,exisprod=0,cant,totalcant=0,con,first=0;
 printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
 scanf("%d",&idf);
 fread(&f2,sizeof(struct fiesta),1,fiestas);
@@ -794,6 +791,12 @@ return;
     SetColor(15);
 }
 else {
+
+while (y==1){
+  first=first+1;
+  fflush(stdin);
+  exisprod=0;
+    rewind(productos);
 printf("Ingrese id del producto que quiere vender: \n");
 printf("(Puede pedir el listado de productos para ver el id) \n");
 scanf("%d",&idp);
@@ -807,29 +810,46 @@ while(!feof(productos)){
 }
  if (exisprod==0){
     printf("El id ingresado no existe\n");
-    return;
 }
  else {
+     printf("\n");
+   printf("Nombre del producto: %s \n",prod2.nombre);
+      printf("Precio del producto: %2f \n",prod2.precio);
+    printf("\n");
+
     printf("Cuanta cantidad desea vender de este producto? \n");
 scanf("%d",&cant);
+
 if (cant<=0){
     printf("La cantidad ingresada es incorrecta\n");
-    return;
+
 }
+else { //voy sumando la cantidad de mercaderia comprada
+totalcant=totalcant+cant;
 precioventaaux = prod2.precio * 1.50;
 
+preciototalaux=preciototalaux+(precioventaaux*(float)cant);
 pv2.idproducto=prod2.idproducto;
 pv2.precioventa=precioventaaux;
+//si es el primer producto perteneciente a la compra aumento el id
 
-fread(&con,sizeof(int),1,IDactualVenta);
+if (first==1){
+   fread(&con,sizeof(int),1,IDactualVenta);
 con= con+1;
 fseek(IDactualVenta, -1*sizeof(int), SEEK_CUR);
    fwrite(&con, sizeof(int), 1, IDactualVenta);
+}
+//si no es el primer producto perteneciente a la compra mantengo el id
 
+else if (first>1){
+   fread(&con,sizeof(int),1,IDactualVenta);
+}
 pv2.idventa=con;
 fseek(productoVenta, 0, SEEK_END);
 fwrite(&pv2, sizeof(struct productoventa),1, productoVenta);
-
+printf("Quiere vender otro producto? Si su respuesta es si, presione 1, sino presione cualquier otro numero \n");
+scanf("%d",&y);
+ }
 }}
 
 time_t tiempo = time(0);
@@ -856,19 +876,20 @@ char segundos[10];
  v2.horaventa.minutos=atoi(minutos);
  v2.horaventa.segundos=atoi(segundos);
 
- v2.cantidad=cant;
+ v2.cantidad=totalcant;
  v2.idfiesta=idf;
  strcpy(v2.mail,mail);
- v2.preciototal=(precioventaaux*(float)cant);
+ v2.preciototal=preciototalaux;
  v2.idventa=con;
 
  fseek(ventas, 0, SEEK_END);
     fwrite(&v2, sizeof(struct venta),1, ventas);
     SetColor(2);
-    printf("La venta se ha registrado correctamente.\n");
+    printf("La compra se ha registrado correctamente.\n");
     SetColor(15);
+first=0;
+}
     }
-
 void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50]){
 struct compraproducto cp2;
 struct compra c2;
@@ -876,9 +897,10 @@ struct fiesta f2;
 struct producto prod2;
 struct usuariofiesta uf2;
 struct proveedor prov2;
-int idf,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con;
+int y=1,idf,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con,first=0;
 long long int cuil,aux;
-int cant;
+float preciototalaux=0;
+int cant,totalcant=0;
 rewind(IDactualCompra);
 fflush(stdin);
 printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
@@ -897,10 +919,10 @@ if (exisf==0){
     SetColor(15);
 }
 else {
-  fflush(stdin);
+        fflush(stdin);
 
-printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
-  printf("(Ingrese solo numeros, sin el signo '-':\n");
+        printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
+        printf("(Ingrese solo numeros, sin el signo '-':\n");
 scanf("%lld",&cuil);
 fflush(stdin);
 aux = cuil;
@@ -921,12 +943,15 @@ if (sum==11){
     return;
   }
    else{
-
+           while(y==1){
+first++;
   fflush(stdin);
         rewind(productos);
 printf("Ingrese id del producto que quiere comprar: \n");
 printf("(Puede pedir el listado de productos para ver el id) \n");
 scanf("%d",&idp);
+
+
 exisprod=0;
 fread(&prod2, sizeof(struct producto),1, productos);
 while(!feof(productos)){
@@ -941,29 +966,47 @@ if (exisprod==0){
     return;
 }
 else{
+
+        printf("\n");
+   printf("Nombre del producto: %s \n",prod2.nombre);
+      printf("Precio del producto: %2f \n",prod2.precio);
+    printf("\n");
+
 printf("Cuanta cantidad desea adquirir de este producto? \n");
 scanf("%d",&cant);
 if (cant<=0){
     printf("La cantidad ingresada es incorrecta\n");
-    return;
 }
+
+//voy sumando la cantidad de mercaderia comprada
+totalcant=totalcant+cant;
+//calcule el precio total de eseproducto
+preciototalaux=preciototalaux+(prod2.precio*(float)cant);
 
 cp2.idproducto=idp;
 cp2.preciocompra=prod2.precio;
 
+//si es el primer producto perteneciente a la compra aumento el id
+if (first==1){
         fread(&con,sizeof(int),1,IDactualCompra);
 
         con= con+1;
         fseek(IDactualCompra,-1*sizeof(int),SEEK_CUR);
         fwrite(&con,sizeof (int),1,IDactualCompra);
-
+}
+//si no es el primer producto perteneciente a la compra mantengo el id
+else if (first>1){
+    fread(&con,sizeof(int),1,IDactualCompra);
+}
     cp2.idcompra=con;
 
 
 fseek(compraProducto, 0, SEEK_END);
     fwrite(&cp2, sizeof(struct compraproducto),1, compraProducto);
 
-}}
+printf("Quiere adquirir otro producto? Si su respuesta es si, presione 1, sino presione cualquier otro numero \n");
+scanf("%d",&y);
+}}}
 time_t tiempo = time(0);
 struct tm *tlocal = localtime(&tiempo);
 char dia[10];
@@ -985,18 +1028,19 @@ c2.horacompra.hora=atoi(hora);
 c2.horacompra.minutos=atoi(minutos);
 c2.horacompra.segundos=atoi(segundos);
 
-c2.cantidad=cant;
+c2.cantidad=totalcant;
 c2.cuil=cuil;
 c2.idcompra=con;
 c2.idfiesta=idf;
 strcpy(c2.mail,mail);
-c2.preciototal=(prod2.precio*(float)cant);
+c2.preciototal=preciototalaux;
 
 fseek(compras, 0, SEEK_END);
     fwrite(&c2, sizeof(struct compra),1, compras);
     SetColor(2);
 
     printf("La compra se ha registrado correctamente.\n");
+    first=0;
     SetColor(15);
 }
 else {
@@ -1005,7 +1049,6 @@ else {
 
 SetColor(15);
 return;
-
 }
 }
 }
