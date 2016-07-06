@@ -32,7 +32,27 @@ struct fecha{
     int mes;
     int year;
 };
+struct hora{
+    int hora;
+    int minutos;
+    int segundos;
+};
+struct compra{
+  int idcompra;
+  int idfiesta;
+  struct fecha fechacompra;
+  struct hora horacompra;
+  float preciototal;
+  int cantidad;
+  char mail [50];
+  long long int cuil;
+};
+struct compraproducto{
+int idcompra;
+int idproducto;
+float preciocompra;
 
+};
 
 struct fiesta{
 	int idfiesta;
@@ -48,9 +68,29 @@ struct usuariofiesta{
 	char mail[50];
 	};
 
+struct venta{
+int idventa;
+struct fecha fechaventa;
+struct hora horaventa;
+float preciototal;
+int cantidad;
+int idfiesta;
+char mail[50];
+};
+
+struct productoventa{
+int idproducto;
+int idventa;
+float precioventa;
+};
 
 int main(int argc,char* argv[])
 {
+    FILE *IDactualVenta;
+    FILE *ventas;
+    FILE *productoVenta;
+    FILE *compras;
+    FILE *compraProducto;
     FILE *proveedores;
     FILE *usuarios;
     FILE *fiestas;
@@ -58,7 +98,12 @@ int main(int argc,char* argv[])
     FILE *IDactualFiesta;
     FILE *productos;
     FILE *IDactualProducto;
+    FILE *IDactualCompra;
 
+    struct venta v;
+    struct productoventa pv;
+    struct compra c;
+    struct compraproducto cp;
     struct proveedor p;
     struct usuario u;
     struct fiesta f;
@@ -82,8 +127,8 @@ int main(int argc,char* argv[])
     fechaActual.mes = atoi(mes);
     fechaActual.year = atoi(year);
 
-
-    /*strcpy(f.descripcion, "fiesta del trigo");
+/*
+    strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
     f.fechainicio.mes = 06;
@@ -95,6 +140,20 @@ int main(int argc,char* argv[])
    fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
     fclose (fiestas);
+
+//id actual de la venta creando
+IDactualVenta = fopen("idventa","wb");
+int contadordev=2;
+fwrite(&contadordev, sizeof(int),1,IDactualVenta);
+    fclose(IDactualVenta);
+
+
+    //id actual de la compra creando
+    IDactualCompra = fopen("idcompra","wb");
+    int contadordeidc= 2;
+    fwrite(&contadordeidc, sizeof(int),1,IDactualCompra);
+    fclose(IDactualCompra);
+
     //id actual fiesta creando
     IDactualFiesta= fopen("idfiestas","wb");
     int contadordeID= 2;
@@ -113,6 +172,54 @@ int main(int argc,char* argv[])
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
+
+    //Registro de una venta
+    v.cantidad=5;
+    v.fechaventa.dia=7;
+    v.fechaventa.mes=7;
+    v.fechaventa.year=16;
+    v.horaventa.hora=01;
+    v.horaventa.minutos=00;
+    v.horaventa.segundos=45;
+    v.idfiesta=1;
+    strcpy(v.mail,"juan@hotmail.com");
+    v.preciototal=100;
+    v.idventa=1;
+    ventas = fopen("ventas", "wb");
+    fwrite(&v, sizeof(struct venta),1,ventas);
+    fclose(ventas);
+
+    //venta producto
+    pv.idproducto=1;
+    pv.idventa=1;
+    pv.precioventa=22,50;
+    productoVenta = fopen("producto venta","wb");
+    fwrite(&pv, sizeof(struct productoventa),1,productoVenta);
+    fclose(productoVenta);
+
+    //registro de compra
+    c.idcompra=1;
+    c.fechacompra.dia=20;
+    c.fechacompra.mes=06;
+    c.fechacompra.year=16;
+    c.horacompra.hora=10;
+    c.horacompra.minutos=10;
+    c.horacompra.segundos=20;
+    c.preciototal=200;
+    c.cantidad=10;
+    strcpy(c.mail,"juan@hotmail.com");
+    c.cuil = 273829137;
+    c.idfiesta=1;
+    compras = fopen("compras", "wb");
+    fwrite(&c, sizeof(struct compra),1,compras);
+    fclose(compras);
+    //registro de compraproducto
+    cp.idcompra=1;
+    cp.idproducto=1;
+    cp.preciocompra=20;
+    compraProducto = fopen("compraProducto", "wb");
+    fwrite(&cp, sizeof(struct compraproducto),1,compraProducto);
+    fclose(compraProducto);
     //Registro de proveedor
     p.cuil=27382916137;
     strcpy(p.nombreempresa,"Coca Cola");
@@ -146,7 +253,7 @@ int main(int argc,char* argv[])
     opcion5=4;
 
     int verificador=0;
-    int usuarioincorrecto=0;
+    int usuarioincorrecto=1;
     int idf;
     struct usuario usu;
     char contra[15];
@@ -155,6 +262,8 @@ int main(int argc,char* argv[])
     u.dni= -1;
     int elegir=4;
     while (elegir!=0){
+    u.dni= -1;
+    usuarioincorrecto=1;
     fiestas = fopen ("fiestas","rb");
     SetColor(2);
     printf("        # # # # # # # # # # # # # # # # # \n");
@@ -210,6 +319,7 @@ int main(int argc,char* argv[])
     fread(&usu, sizeof(struct usuario),1, usuarios);
     while (!feof(usuarios)){
         if (strcmp(usu.mail,mail)==0 ){
+            usuarioincorrecto=0;
             if (strcmp(usu.contrasena,contra)==0){
             strcpy(u.nombre, usu.nombre);
             strcpy(u.mail,usu.mail);
@@ -224,16 +334,16 @@ int main(int argc,char* argv[])
             fclose(usuarioFiesta);
             }
         }
-        usuarioincorrecto=1;
         fread(&usu, sizeof(struct usuario),1, usuarios);
     }
-    if (usuarioincorrecto==1&& verificador==0){
+
+    if (usuarioincorrecto==1 && verificador==0){
         SetColor(4);
         printf("Email incorrecto o no existe\n");
     SetColor(15);
     }
 
-    if (u.dni==-1){
+    if (u.dni==-1 && usuarioincorrecto==0){
         SetColor(4);
         printf("Contraseña incorrecta\n");
         SetColor(15);
@@ -251,6 +361,7 @@ int main(int argc,char* argv[])
     printf("Se inicio sesion correctamente\n");
     SetColor(15);
     fclose(usuarios);
+    if ((strcmp(u.tipousuario,"administrador")==0) || (strcmp(u.tipousuario,"Administrador")==0)){
     opcion =4;
     while (opcion !=0){
     SetColor(3);
@@ -266,12 +377,14 @@ int main(int argc,char* argv[])
     printf(" 2.- Fiestas\n");
     printf(" 3.- Productos\n");
     printf(" 4.- Proveedores\n");
+    printf(" 5.- Compra\n");
     printf(" 0.- Cerrar sesion\n");
     scanf ("%d", &opcion);
     switch(opcion){
         case 1:
     	    opcion2=4;
             while(opcion2!=0){
+
                  SetColor(3);
                  printf("****************************************************************************\n");
                  SetColor(2);
@@ -304,9 +417,11 @@ int main(int argc,char* argv[])
                 break;
             case 3:
                 usuarioFiesta = fopen("usuarioFiesta", "rb");
+                usuarios= fopen("usuarios", "rb");
                 fiestas = fopen("fiestas","rb");
-                listadoUsuarios(u,usuarioFiesta,fiestas);
+                listadoUsuarios(u,usuarioFiesta,fiestas,usuarios);
                 fclose(usuarioFiesta);
+                fclose(usuarios);
                 fclose(fiestas);
                 break;
             case 4:
@@ -387,10 +502,15 @@ int main(int argc,char* argv[])
                     printf(" 2.- Listado de Producto\n");
                     printf(" 3.- Modificar Producto\n");
                     printf(" 4.- Dar de Baja Producto\n");
+                    printf(" 5.- Ver detalle de un producto\n");
                     printf(" 0.- Salir\n");
                     scanf("%d", &opcion4);
                     switch(opcion4){
-
+            case 5:
+                productos=fopen("productos","rb");
+                verdetalle(productos);
+                fclose(productos);
+                break;
                 case 0:
                     break;
                 case 1:
@@ -460,8 +580,131 @@ int main(int argc,char* argv[])
                 fclose(proveedores);
                 break;
                  }
+
 } break;
-    }}}}}}
+ case 5:
+    	    opcion2=4;
+            while(opcion2!=0){
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(2);
+                 printf("                         Compra             \n");
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(15);
+                 printf(" 1.- Registrar una compra\n");
+                 printf(" 0.- Salir\n");
+                 scanf("%d", &opcion2);
+                 switch(opcion2){
+                 case 0:
+                    break;
+                 case 1:
+                    compras = fopen("compras","rb+");
+                    compraProducto = fopen("compraProducto","rb+");
+                    productos = fopen("productos","rb");
+                    fiestas = fopen("fiestas","rb");
+                    usuarioFiesta=fopen("usuarioFiesta","rb");
+                    proveedores=fopen("proveedores","rb");
+                    IDactualCompra=fopen("idcompra","rb+");
+                    realizarcompra(compras,compraProducto,productos,fiestas,usuarioFiesta,proveedores,IDactualCompra);
+
+                    fclose(compras);
+                    fclose(productos);
+                    fclose(compraProducto);
+                    fclose(fiestas);
+                    fclose(usuarioFiesta);
+                    fclose(proveedores);
+                    fclose(proveedores);
+                    fclose(IDactualCompra);
+                    break;
+    }
+
+    }
+
+
+
+    break;
+    }
+    }
+
+    }
+    else if ((strcmp(u.tipousuario,"vendedor")==0) || (strcmp(u.tipousuario,"Vendedor")==0)){
+    opcion =4;
+       while (opcion !=0){
+    SetColor(3);
+    printf("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n");
+    printf("#");
+    SetColor(10);
+    printf("                                   CrazyFiesta                             ");
+    SetColor(3);
+    printf("#\n");
+    printf("# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #\n\n");
+    SetColor(15);
+    printf(" 1.- Ventas\n");
+    printf(" 2.- Listado de productos\n");
+    printf(" 3.- Listado de Fiestas\n");
+
+    printf(" 0.- Cerrar sesion\n");
+
+    scanf ("%d", &opcion);
+    switch(opcion){
+case 0:
+    return;
+case 3:
+    fiestas = fopen ("fiestas","rb");
+    listadoGeneralFiesta(fiestas);
+            fclose (fiestas);
+            break;
+
+    case 2:
+                    productos = fopen("productos", "rb");
+                    listadoProducto(prod,productos);
+                    fclose(productos);
+                    break;
+    case 1:
+    opcion2=4;
+                while(opcion2!=0){
+
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(2);
+                 printf("                             Ventas                                 \n");
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(15);
+                printf(" 1.- Realizar una venta\n");
+                 printf(" 0.- Salir\n");
+
+
+                 scanf("%d", &opcion2);
+                 switch(opcion2){
+                case 0:
+                break;
+                case 1:
+
+                 ventas = fopen("ventas","rb+");
+                 usuarioFiesta = fopen("usuarioFiesta","rb");
+                 productos = fopen("productos","rb");
+                 productoVenta = fopen("productoVenta","rb+");
+                 fiestas = fopen ("fiestas","rb");
+                 IDactualVenta = fopen("idventa","rb+");
+                 realizarventa(fiestas,usuarioFiesta,ventas,productos,productoVenta,IDactualVenta);
+                 fclose(ventas);
+                 fclose(usuarioFiesta);
+                 fclose(IDactualVenta);
+                 fclose(productos);
+                 fclose(productoVenta);
+                 fclose(fiestas);
+                    break;
+                 }
+
+    }
+
+    break;
+
+
+    }}
+    }}}}}
 
 void dardebajaproveedor(FILE *proveedores);
 void modificarProveedor(FILE *proveedores);
@@ -473,7 +716,7 @@ int verificarPermiso(int idf,struct usuario u,FILE *usuarioFiesta);
 void mostrarFiestas(struct fiesta f);
 int verificarMail (char mail[], FILE *usuarioFiesta,int);
 int verificadorContrasena(char contra[], FILE *usuarios, struct usuario u);
-void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas);
+void listadoUsuarios(struct usuario, FILE *usuarioFiesta,FILE *fiestas, FILE *usuarios);
 void cambiarContrasena(struct usuario u, FILE *usuarios);
 void AltaFiesta (FILE* IDactualFiesta,FILE *fiestas,FILE *usuarioFiesta, struct usuario u,struct fecha actual);
 void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios,FILE *usuarioFiesta, struct fecha);
@@ -492,6 +735,326 @@ void ModificarProducto(struct producto p, FILE *productos);
 void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
+float esNumero();
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *usuarioFiesta,FILE *proveedores,FILE *IDactualCompra);
+void realizarventa(FILE *fiestas, FILE *usuarioFiesta, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta);
+void verdetalle(FILE *productos);
+
+void verdetalle(FILE *productos){
+int idp,exisp=0;
+struct producto p2;
+rewind(productos);
+printf("Ingrese el id del producto que quiere ver el detalle:\n");
+printf("(Puede ver el listado de ids de productos)\n");
+scanf("%d",&idp);
+fread(&p2,sizeof(struct producto),1,productos);
+while(!feof(productos)){
+    if (p2.idproducto==idp){
+        exisp=1;
+        break;
+    }
+
+    fread(&p2,sizeof(struct producto),1,productos);
+}
+if (exisp==0){
+    printf("El id de producto ingresado no existe\n");
+}
+else {
+printf("\n");
+printf("\n");
+printf("Id del producto: %d \n",p2.idproducto);
+printf("Nombre del producto: %s \n",p2.nombre);
+printf("Precio del producto: %f \n",p2.precio);
+printf("Stock del producto: %d \n",p2.stock);
+    }
+}
+
+
+
+void realizarventa(FILE *fiestas,FILE *usuarioFiesta, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta){
+struct fiesta f2;
+struct usuariofiesta uf2;
+float precioventaaux;
+struct venta v2;
+struct producto prod2;
+struct productoventa pv2;
+int idf,exisf=0,y=1,exisu=0,idp,exisprod=0,cant,con;
+char mail[50];
+printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
+scanf("%d",&idf);
+fread(&f2,sizeof(struct fiesta),1,fiestas);
+while (!feof(fiestas)){
+if(f2.idfiesta==idf){
+            exisf=1;
+    }
+    fread(&f2,sizeof(struct fiesta),1,fiestas);
+
+}
+if (exisf==0){
+        SetColor(4);
+    printf("La fiesta ingresada no existe\n");
+return;
+    SetColor(15);
+}
+else {
+rewind(usuarioFiesta);
+printf("Ingrese su mail: \n");
+scanf("%s",mail);
+fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
+while(!feof(usuarioFiesta)){
+    if(uf2.idfiesta==idf){
+       if ((strcmp(uf2.mail,mail))==0){
+            exisu=1;
+       }
+        }
+    fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
+}
+if (exisu==0){
+    printf("El mail no se encuentra registrado en el sistema o no se encuentra asociado a esa fiesta\n");
+}
+else{
+
+  fflush(stdin);
+  exisprod=0;
+    rewind(productos);
+printf("Ingrese id del producto que quiere vender: \n");
+printf("(Puede pedir el listado de productos para ver el id) \n");
+scanf("%d",&idp);
+ fread(&prod2, sizeof(struct producto),1, productos);
+while(!feof(productos)){
+    if(prod2.idproducto==idp){
+        exisprod=1;
+        break;
+    }
+    fread(&prod2, sizeof(struct producto),1, productos);
+}
+ if (exisprod==0){
+    printf("El id ingresado no existe\n");
+    return;
+}
+ else {
+    printf("Cuanta cantidad desea vender de este producto? \n");
+scanf("%d",&cant);
+if (cant<0){
+    printf("La cantidad ingresada es incorrecta\n");
+    return;
+}
+precioventaaux = prod2.precio * 1.50;
+
+pv2.idproducto=prod2.idproducto;
+pv2.precioventa=precioventaaux;
+
+fread(&con,sizeof(int),1,IDactualVenta);
+con= con+1;
+fseek(IDactualVenta, -1*sizeof(int), SEEK_CUR);
+   fwrite(&con, sizeof(int), 1, IDactualVenta);
+
+pv2.idventa=con;
+fseek(productoVenta, 0, SEEK_END);
+fwrite(&pv2, sizeof(struct productoventa),1, productoVenta);
+
+}}
+
+time_t tiempo = time(0);
+struct tm *tlocal = localtime(&tiempo);
+char dia[10];
+char mes[10];
+char year[10];
+ strftime(dia,15,"%d",tlocal);
+ strftime(mes,15,"%m",tlocal);
+ strftime(year,15,"%y",tlocal);
+
+ v2.fechaventa.dia=atoi(dia);
+ v2.fechaventa.mes=atoi(mes);
+ v2.fechaventa.year=atoi(year);
+
+ char hora[10];
+char minutos[10];
+char segundos[10];
+ strftime(hora,15,"%H",tlocal);
+  strftime(minutos,15,"%M",tlocal);
+   strftime(segundos,15,"%S",tlocal);
+
+ v2.horaventa.hora=atoi(hora);
+ v2.horaventa.minutos=atoi(minutos);
+ v2.horaventa.segundos=atoi(segundos);
+
+ v2.cantidad=cant;
+ v2.idfiesta=idf;
+ strcpy(v2.mail,mail);
+ v2.preciototal=(precioventaaux*(float)cant);
+ v2.idventa=con;
+
+ fseek(ventas, 0, SEEK_END);
+    fwrite(&v2, sizeof(struct venta),1, ventas);
+    SetColor(2);
+    printf("La venta se ha registrado correctamente.\n");
+    SetColor(15);
+
+    }
+}
+
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *usuarioFiesta,FILE *proveedores,FILE *IDactualCompra){
+struct compraproducto cp2;
+struct compra c2;
+struct fiesta f2;
+struct producto prod2;
+struct usuariofiesta uf2;
+struct proveedor prov2;
+int idf,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con;
+long long int cuil,aux;
+int cant;
+char mail[50];
+rewind(IDactualCompra);
+fflush(stdin);
+printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
+scanf("%d",&idf);
+fread(&f2, sizeof(struct fiesta),1, fiestas);
+while(!feof(fiestas)){
+    if(f2.idfiesta==idf){
+            exisf=1;
+    }
+    fread(&f2, sizeof(struct fiesta),1, fiestas);
+    }
+if (exisf==0){
+    SetColor(4);
+    printf("La fiesta ingresada no existe\n");
+    return;
+    SetColor(15);
+}
+else {
+
+rewind(usuarioFiesta);
+printf("Ingrese su mail: \n");
+scanf("%s",mail);
+fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
+while(!feof(usuarioFiesta)){
+    if(uf2.idfiesta==idf){
+       if ((strcmp(uf2.mail,mail))==0){
+
+            exisu=1;
+       }
+        }
+    fread(&uf2,sizeof(struct usuariofiesta),1,usuarioFiesta);
+}
+if (exisu==0){
+    printf("El mail no se encuentra registrado en el sistema o no se encuentra asociado a esa fiesta\n");
+}
+else {
+        fflush(stdin);
+
+        printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
+        printf("(Ingrese solo numeros, sin el signo '-':\n");
+scanf("%lld",&cuil);
+fflush(stdin);
+aux = cuil;
+ while(aux > 0){
+        aux=aux/10;
+        sum = sum + 1;
+    }
+if (sum==11){
+        fread(&prov2,sizeof(struct proveedor),1,proveedores);
+   while(!feof(proveedores)){
+       if(prov2.cuil==cuil){
+        existprov=1;
+       }
+            fread(&prov2,sizeof(struct proveedor),1,proveedores);
+   }
+  if (existprov==0){
+    printf("El cuil ingresado no se encuentra registrado en el sistema\n");
+    return;
+  }
+   else{
+
+  fflush(stdin);
+        rewind(productos);
+printf("Ingrese id del producto que quiere comprar: \n");
+printf("(Puede pedir el listado de productos para ver el id) \n");
+scanf("%d",&idp);
+exisprod=0;
+fread(&prod2, sizeof(struct producto),1, productos);
+while(!feof(productos)){
+    if(prod2.idproducto==idp){
+        exisprod=1;
+        break;
+    }
+    fread(&prod2, sizeof(struct producto),1, productos);
+}
+if (exisprod==0){
+    printf("El id ingresado no existe\n");
+    return;
+}
+else{
+printf("Cuanta cantidad desea adquirir de este producto? \n");
+scanf("%d",&cant);
+if (cant<0){
+    printf("La cantidad ingresada es incorrecta\n");
+    return;
+}
+
+cp2.idproducto=idp;
+cp2.preciocompra=prod2.precio;
+
+        fread(&con,sizeof(int),1,IDactualCompra);
+
+        con= con+1;
+        fseek(IDactualCompra,-1*sizeof(int),SEEK_CUR);
+        fwrite(&con,sizeof (int),1,IDactualCompra);
+
+    cp2.idcompra=con;
+
+
+fseek(compraProducto, 0, SEEK_END);
+    fwrite(&cp2, sizeof(struct compraproducto),1, compraProducto);
+
+}}
+time_t tiempo = time(0);
+struct tm *tlocal = localtime(&tiempo);
+char dia[10];
+char mes[10];
+char year[10];
+ strftime(dia,15,"%d",tlocal);
+ strftime(mes,15,"%m",tlocal);
+ strftime(year,15,"%y",tlocal);
+c2.fechacompra.dia=atoi(dia);
+c2.fechacompra.mes=atoi(mes);
+c2.fechacompra.year=atoi(year);
+char hora[10];
+char minutos[10];
+char segundos[10];
+ strftime(hora,15,"%H",tlocal);
+  strftime(minutos,15,"%M",tlocal);
+   strftime(segundos,15,"%S",tlocal);
+c2.horacompra.hora=atoi(hora);
+c2.horacompra.minutos=atoi(minutos);
+c2.horacompra.segundos=atoi(segundos);
+
+c2.cantidad=cant;
+c2.cuil=cuil;
+c2.idcompra=con;
+c2.idfiesta=idf;
+strcpy(c2.mail,mail);
+c2.preciototal=(prod2.precio*(float)cant);
+
+fseek(compras, 0, SEEK_END);
+    fwrite(&c2, sizeof(struct compra),1, compras);
+    SetColor(2);
+
+    printf("La compra se ha registrado correctamente.\n");
+    SetColor(15);
+}
+else {
+    SetColor(4);
+        printf("Error. El cuil ingresado no tiene 11 digitos \n");
+
+SetColor(15);
+return;
+
+}
+}
+}
+}
+
 
 void dardebajaproveedor(FILE *proveedores){
 int aux=0,x,sum=0;
@@ -556,7 +1119,7 @@ return;
 
 void modificarProveedor(FILE *proveedores){
 int x,opcion =4,aux=0,sum=0;
-long long int caux,caux2,aux2;
+long long int caux,caux2,aux2,cuilUsado=0;;
 struct proveedor p3;
 rewind(proveedores);
 printf("Ingrese el cuil del proveedor que desea modificar: \n");
@@ -568,8 +1131,15 @@ aux2 = caux;
     sum = sum + 1;
     }
 if (sum==11){
+fread(&p3,sizeof(struct proveedor),1,proveedores);
+while (!feof(proveedores)){
+    if (caux==p3.cuil){
+        cuilUsado=1;
+    }
+    fread(&p3,sizeof(struct proveedor),1,proveedores);
+}
 
-
+rewind(proveedores);
 fread(&p3,sizeof(struct proveedor),1,proveedores);
 while(!feof(proveedores)){
     if (p3.cuil==caux){
@@ -615,6 +1185,7 @@ while(!feof(proveedores)){
                sum = sum + 1;
                }
                if (sum==11){
+                    if (cuilUsado==0){
                 p3.cuil=caux2;
                fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
                fwrite(&p3, sizeof(struct proveedor),1,proveedores);
@@ -622,7 +1193,11 @@ while(!feof(proveedores)){
                 printf("La modificacion del cuil se ha realizado correctamente.\n");
                 SetColor(15);
                 break;
-               }
+                }else {
+                    printf("El cuil que ingreso esta en uso\n");
+                    break;
+                }
+                }
                else {
                     SetColor(4);
                     printf("El cuil ingresado no tiene 11 digitos \n");
@@ -673,7 +1248,6 @@ return;
 void listadoproveedores(FILE *proveedores){
 struct proveedor p2;
 SetColor(2);
-
 printf("                 Listado de proveedores registrados en el sistema              \n");
                     SetColor(3);
 
@@ -684,15 +1258,15 @@ fread(&p2,sizeof(struct proveedor),1,proveedores);
 while (!feof(proveedores)){
     printf("Cuil: %lld            Nombre de la empresa: %s\n",p2.cuil,p2.nombreempresa);
     fread(&p2,sizeof(struct proveedor),1,proveedores);
-
+}
 }
 
-}
+
 
 void AltaProveedor(FILE *proveedores,FILE *usuarios){
 struct proveedor p1,p2;
 long long int aux;
-int sum = 0,existe=0;
+int sum = 0,existe=0, yaexiste=0;
 printf("Ingrese el cuil del proveedor que desea dar de alta: \n");
 printf("(Ingrese solo numeros, sin el signo '-'):\n");
 scanf("%lld",&p1.cuil);
@@ -706,6 +1280,9 @@ if (sum==11){
         rewind(proveedores);
         fread(&p2,sizeof(struct proveedor),1,proveedores);
         while (!feof(proveedores)){
+                if (p2.cuil*-1 == p1.cuil){
+                    yaexiste=1;
+                }
                 if (p2.cuil == p1.cuil){
                     existe=1;
                 }
@@ -725,11 +1302,25 @@ if (sum==11){
          scanf("%s",p1.mail);
         fflush(stdin);
         if (verificarexistenciamail(p1, usuarios)==0) {
-        fseek(proveedores, 0, SEEK_END);
-        fwrite(&p1, sizeof(struct proveedor),1, proveedores);
-        SetColor(2);
-        printf("El proveedor se ha dado de alta correctamente\n");
-        SetColor(15); }
+            if (yaexiste==0){
+                fseek(proveedores, 0, SEEK_END);
+                fwrite(&p1, sizeof(struct proveedor),1, proveedores);
+                SetColor(2);
+                printf("El proveedor se ha dado de alta correctamente\n");
+                SetColor(15); }
+        else {
+            rewind(proveedores);
+            fread(&p2,sizeof(struct proveedor),1,proveedores);
+            while (!feof(proveedores)&&(p2.cuil*-1!=p1.cuil)){
+                fread(&p2,sizeof(struct proveedor),1,proveedores);}
+            if (p2.cuil*-1==p1.cuil){
+                fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
+                fwrite(&p1, sizeof(struct proveedor),1, proveedores);
+                SetColor(2);
+                printf("El proveedor se ha dado de alta correctamente\n");
+                SetColor(15); }
+            }
+        }
         else {
         SetColor(4);
         printf("El mail ingresado no es correcto\n");
@@ -1095,18 +1686,19 @@ int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual){
 }
 
 
-void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
+void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas,FILE *usuarios){
     struct usuariofiesta uf3,uf4;
+    struct usuario usu;
     int pertenece,aux;
     char mail[50];
     pertenece = 1;
     printf("Ingrese el id de la fiesta de la que quiere obtener los usuarios: \n");
     scanf("%d",&aux);
-    
+
     fflush(stdin);
     printf("Ingrese su mail: \n");
     scanf("%s",mail);
-    
+
     while (!feof(usuarioFiesta)){
         fread(&uf3,sizeof(struct usuariofiesta),1,usuarioFiesta);
         if ((uf3.idfiesta == aux) && ((strcmp(uf3.mail,mail))==0)){
@@ -1122,9 +1714,24 @@ void listadoUsuarios(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
         fread(&uf4,sizeof(struct usuariofiesta),1,usuarioFiesta);
         while (!feof(usuarioFiesta)){
             if (uf4.idfiesta == aux){
-            printf("\n Mail: %s \n", uf4.mail);}
+                     rewind(usuarios);
+                     fread(&usu,sizeof(struct usuario),1,usuarios);
+                     while (!feof(usuarios)){
+                        if (strcmp(uf4.mail,usu.mail)==0){
+                            printf("\n Mail: %s \n", usu.mail);
+                            printf("\n Nombre: %s \n", usu.nombre);
+                            printf("\n Apellido: %s \n", usu.apellido);
+                            printf("\n DNI: %d \n", usu.dni);
+                            printf("\n Tipo de usuario: %s \n", usu.tipousuario);
+                            printf("________________________________________________________________________________\n");
+                            }
+                        fread(&usu,sizeof(struct usuario),1,usuarios);
+                        }
+                     }
             fread(&uf4,sizeof(struct usuariofiesta),1,usuarioFiesta);
     }}}
+
+
 
 void listadoFiesta(struct usuario u, FILE *usuarioFiesta, FILE *fiestas){
     struct usuariofiesta usu;
@@ -1267,7 +1874,6 @@ int verificarMail (char mail[], FILE *usuarioFiesta,int idf){
     while (!feof(usuarioFiesta)){
        if (strcmp(uf.mail,mail)==0){
         if (idf == uf.idfiesta){
-
         return 1;
         }
        }
@@ -1394,10 +2000,18 @@ void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p){
 
 void listadoProducto(struct producto p, FILE *productos){
     struct producto prod;
+    SetColor(2);
+
+    printf("                 Listado de productos registrados en el sistema              \n");
+                    SetColor(3);
+
+    printf("________________________________________________________________________________\n");
+                    SetColor(15);
     rewind(productos);
     fread(&prod,sizeof(struct producto),1,productos);
     while(!feof(productos)){
         mostrarProductos(prod);
+        printf("________________________________________________________________________________\n");
         fread(&prod,sizeof(struct producto),1,productos);
     }
 }
