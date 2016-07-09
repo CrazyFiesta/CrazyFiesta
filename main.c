@@ -23,6 +23,7 @@ struct producto{
     int idproducto;
     char nombre[40];
     int stock;
+    int stockmax;
     float precio;
 };
 
@@ -127,8 +128,8 @@ int main(int argc,char* argv[])
     fechaActual.mes = atoi(mes);
     fechaActual.year = atoi(year);
 
-/*
-    strcpy(f.descripcion, "fiesta del trigo");
+
+    /*strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
     f.fechainicio.mes = 06;
@@ -169,6 +170,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     strcpy(prod.nombre, "Gaseosas");
     prod.precio = 15,45;
     prod.stock = 100;
+    prod.stockmax = 100;
     productos = fopen("productos", "wb");
     fwrite(&prod, sizeof(struct producto),1,productos);
     fclose(productos);
@@ -245,7 +247,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     strcpy(uparty.mail,u.mail);
     fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    fclose(usuarioFiesta); */
+    fclose(usuarioFiesta);*/
     opcion= 4;
     opcion2=4;
     opcion3=4;
@@ -378,7 +380,10 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     printf(" 3.- Productos\n");
     printf(" 4.- Proveedores\n");
     printf(" 5.- Compra\n");
-    printf(" 0.- Cerrar sesion\n");
+    printf(" 0.- Cerrar sesion\n\n");
+    productos = fopen("productos", "rb");
+    StockMinimo(prod, productos);
+    fclose(productos);
     scanf ("%d", &opcion);
     switch(opcion){
         case 1:
@@ -735,6 +740,7 @@ float esNumero();
 void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char[50]);
 void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50]);
 void verdetalle(FILE *productos);
+void StockMinimo(struct producto p, FILE *productos);
 
 void verdetalle(FILE *productos){
 int idp,exisp=0;
@@ -758,7 +764,7 @@ else {
 
 printf("Id del producto: %d \n",p2.idproducto);
 printf("Nombre del producto: %s \n",p2.nombre);
-printf("Precio del producto: %f \n",p2.precio);
+printf("Precio del producto: %.2f \n",p2.precio);
 printf("Stock del producto: %d \n",p2.stock);
     }
 }
@@ -814,7 +820,7 @@ while(!feof(productos)){
  else {
      printf("\n");
    printf("Nombre del producto: %s \n",prod2.nombre);
-      printf("Precio del producto: %2f \n",prod2.precio);
+      printf("Precio del producto: %.2f \n",prod2.precio);
     printf("\n");
 
     printf("Cuanta cantidad desea vender de este producto? \n");
@@ -980,7 +986,7 @@ if (cant<=0){
 
 //voy sumando la cantidad de mercaderia comprada
 totalcant=totalcant+cant;
-//calcule el precio total de eseproducto
+//calcule el precio total de ese producto
 preciototalaux=preciototalaux+(prod2.precio*(float)cant);
 
 cp2.idproducto=idp;
@@ -1983,6 +1989,7 @@ void AltaProducto(FILE *productos, FILE *IDactualProducto, struct producto p){
         else aux2=1;
     }
     p.stock=st;
+    p.stockmax=st;
     fread(&con,sizeof(int),1,IDactualProducto);
     con= con+1;
     fseek(IDactualProducto, -1*sizeof(int), SEEK_CUR);
@@ -2023,7 +2030,7 @@ void mostrarProductos(struct producto p){
 
 void ModificarProducto(struct producto p, FILE *productos){
 struct producto prod;
-int idf, x, aux, opcion, stock;
+int idf, x, aux, opcion, stock, aux2, aux3;
 float pre;
 aux=0;
 printf("Ingrese el ID del producto que desea modificar: ");
@@ -2078,8 +2085,19 @@ while(!feof(productos)){
                 SetColor(3);
                 printf("__________________________________________________________________________\n");
                 SetColor(15);
+                aux3=0;
                 printf("Ingrese el nuevo precio del producto: \n");
                 scanf("%f", &pre);
+                while(aux3==0){
+                if(pre<=0){
+                SetColor(4);
+                printf("El precio no es valido.\n");
+                SetColor(15);
+                printf("Ingrese el precio del producto: ");
+                scanf("%f", &pre);
+                }
+                else aux3=1;
+                }
                 prod.precio=pre;
                 fseek(productos, -1*sizeof(struct producto), SEEK_CUR);
                 fwrite(&prod, sizeof(struct producto),1,productos);
@@ -2094,13 +2112,25 @@ while(!feof(productos)){
                 SetColor(3);
                 printf("_____________________________________________________________________________\n");
                 SetColor(15);
+                aux2=0;
                 printf("Ingrese el nuevo stock del producto: \n");
                 scanf("%d", &stock);
-                prod.stock=stock;
+                while(aux2==0){
+                      if(stock<=0){
+                      SetColor(4);
+                      printf("El stock no es valido.\n");
+                      SetColor(15);
+                      printf("Ingrese el stock del producto: ");
+                      scanf("%d", &stock);
+                      }
+                      else aux2=1;
+                }
+                     prod.stock=stock;
+                     prod.stockmax=stock;
                 fseek(productos, -1*sizeof(struct producto), SEEK_CUR);
                 fwrite(&prod, sizeof(struct producto),1,productos);
                 SetColor(2);
-                printf("La modificacion del nombre se ha realizado correctamente.\n");
+                printf("La modificacion del stock se ha realizado correctamente.\n");
                 SetColor(15);
 
                 break;
@@ -2167,17 +2197,36 @@ if(aux==0){
 }
 }
 
-/*int formatoFecha(unsigned d, unsigned m, unsigned a){
-  char linea[MAX_CHARS];
-   if (fgets(linea, MAX_CHARS, stdin) == NULL){
-      return 0;
-   }
-   if (sscanf(linea, "%2u/%2u/%4u", &d, &m, &a) == 3){
-      if((d>=1 && d<=31) &&(m>=1 && m<=12) && (a>=2000 && a<=2200)){
-            return 1;
-      }
-   }else
-      puts("Entrada no valida");
-   return 1;
+void StockMinimo(struct producto p, FILE *productos){
+struct producto prod;
+int minimo, aux;
+aux=0;
+fread(&prod, sizeof(struct producto),1,productos);
+while (!feof(productos)){
+    minimo= ((prod.stockmax *10)/100);
+    if(prod.stock<=minimo){
+        SetColor(14);
+        printf("El producto '%s' esta con el stock minimo\n", prod.nombre);
+        SetColor(15);
+        aux=1;
+    }
+    fread(&prod, sizeof(struct producto),1,productos);
 }
-*/
+if(aux==0){
+    SetColor(7);
+    printf("No hay ningun producto con el stock al minimo.\n\n");
+    SetColor(15);
+}
+}
+
+/*int StockMinimoIndividual(struct producto p){
+int minimo;
+minimo=(p.stockmax*10)/100;
+if(p.stock<=minimo){
+    return 1;
+}
+else return 0;
+}*/
+
+
+
