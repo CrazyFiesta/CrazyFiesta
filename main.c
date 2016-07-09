@@ -380,6 +380,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     printf(" 3.- Productos\n");
     printf(" 4.- Proveedores\n");
     printf(" 5.- Compra\n");
+    printf(" 6.- Listado de ventas\n");
     printf(" 0.- Cerrar sesion\n\n");
     productos = fopen("productos", "rb");
     StockMinimo(prod, productos);
@@ -627,6 +628,12 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
 
 
     break;
+                 case 6:
+                    ventas = fopen("ventas", "rb+");
+                    ListadoVentas(v, ventas);
+                    fclose(ventas);
+                    break;
+
     }
     }
 
@@ -686,7 +693,7 @@ case 3:
                 case 1:
 
                  ventas = fopen("ventas","rb+");
-                 productos = fopen("productos","rb");
+                 productos = fopen("productos","rb+");
                  productoVenta = fopen("productoVenta","rb+");
                  fiestas = fopen ("fiestas","rb");
                  IDactualVenta = fopen("idventa","rb+");
@@ -741,6 +748,9 @@ void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fie
 void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50]);
 void verdetalle(FILE *productos);
 void StockMinimo(struct producto p, FILE *productos);
+void mostrarVentas(struct venta v);
+void ListadoVentas(struct venta v, FILE *ventas);
+
 
 void verdetalle(FILE *productos){
 int idp,exisp=0;
@@ -833,6 +843,10 @@ if (cant<=0){
 else { //voy sumando la cantidad de mercaderia comprada
 totalcant=totalcant+cant;
 precioventaaux = prod2.precio * 1.50;
+fseek(productos, -1*sizeof(prod2), SEEK_CUR);
+prod2.stock=prod2.stock - cant;
+fwrite(&prod2, sizeof(prod2),1,productos);
+
 
 preciototalaux=preciototalaux+(precioventaaux*(float)cant);
 pv2.idproducto=prod2.idproducto;
@@ -1936,8 +1950,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
     }
 }
 
-void SetColor(int ForgC)
- {
+void SetColor(int ForgC){
  WORD wColor;
 
   HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -2201,12 +2214,13 @@ void StockMinimo(struct producto p, FILE *productos){
 struct producto prod;
 int minimo, aux;
 aux=0;
+rewind(productos);
 fread(&prod, sizeof(struct producto),1,productos);
 while (!feof(productos)){
     minimo= ((prod.stockmax *10)/100);
     if(prod.stock<=minimo){
         SetColor(14);
-        printf("El producto '%s' esta con el stock minimo\n", prod.nombre);
+        printf("El producto '%s' esta con el stock minimo (Cantidad restante: %d)\n", prod.nombre, prod.stock);
         SetColor(15);
         aux=1;
     }
@@ -2219,14 +2233,30 @@ if(aux==0){
 }
 }
 
-/*int StockMinimoIndividual(struct producto p){
-int minimo;
-minimo=(p.stockmax*10)/100;
-if(p.stock<=minimo){
-    return 1;
+void ListadoVentas(struct venta v, FILE *ventas){
+    struct venta ven;
+    SetColor(2);
+    printf("                       Listado de ventas registrados en el sistema         \n");
+    SetColor(3);
+    printf("_____________________________________________________________________________\n\n");
+    SetColor(15);
+    rewind(ventas);
+    fread(&ven, sizeof(struct venta),1,ventas);
+    while(!feof(ventas)){
+        mostrarVentas(ven);
+        SetColor(5);
+        printf("______________________________________________________________________________\n\n");
+        SetColor(15);
+        fread(&ven, sizeof(struct venta),1,ventas);
+    }
 }
-else return 0;
-}*/
 
-
+void mostrarVentas(struct venta v){
+    printf("                                                        %d/%d/%d - %d:%d\n", v.fechaventa.dia, v.fechaventa.mes, v.fechaventa.year, v.horaventa.hora, v.horaventa.minutos);
+    printf("ID de la venta: %d\n", v.idventa);
+    printf("ID de la fiesta: %d\n", v.idfiesta);
+    printf("Cantidad vendida: %d\n", v.cantidad);
+    printf("Precio total de la venta: %.2f\n", v.preciototal);
+    printf("Vendedor: %s\n\n", v.mail);
+}
 
