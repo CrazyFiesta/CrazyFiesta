@@ -280,7 +280,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     SetColor(15);
     printf(" 1.- Iniciar sesion\n");
     printf(" 2.- Listado de Fiestas\n");
-    printf(" 0.- Salir\n");;
+    printf(" 0.- Salir\n\n\n");;
     scanf ("%d", &elegir);
     switch(elegir){
         case 0:
@@ -659,7 +659,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     scanf ("%d", &opcion);
     switch(opcion){
 case 0:
-    return;
+    break;
 case 3:
     fiestas = fopen ("fiestas","rb");
     listadoGeneralFiesta(fiestas);
@@ -2218,9 +2218,15 @@ rewind(productos);
 fread(&prod, sizeof(struct producto),1,productos);
 while (!feof(productos)){
     minimo= ((prod.stockmax *10)/100);
-    if(prod.stock<=minimo){
+    if((prod.stock<=minimo) && (prod.stock>=0)){
         SetColor(14);
-        printf("El producto '%s' esta con el stock minimo (Cantidad restante: %d)\n", prod.nombre, prod.stock);
+        printf("El producto '%s' esta con el stock minimo (Cantidad restante: %d)\n\n", prod.nombre, prod.stock);
+        SetColor(15);
+        aux=1;
+    }
+    if(prod.stock<=0){
+        SetColor(4);
+        printf("No hay stock suficiente de '%s'.\n", prod.nombre);
         SetColor(15);
         aux=1;
     }
