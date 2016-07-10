@@ -594,7 +594,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
                  SetColor(3);
                  printf("****************************************************************************\n");
                  SetColor(2);
-                 printf("                         Compra             \n");
+                 printf("                         Compra                                  \n");
                  SetColor(3);
                  printf("****************************************************************************\n");
                  SetColor(15);
@@ -607,7 +607,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
                  case 1:
                     compras = fopen("compras","rb+");
                     compraProducto = fopen("compraProducto","rb+");
-                    productos = fopen("productos","rb");
+                    productos = fopen("productos","rb+");
                     fiestas = fopen("fiestas","rb");
                     proveedores=fopen("proveedores","rb");
                     IDactualCompra=fopen("idcompra","rb+");
@@ -775,7 +775,7 @@ else {
 printf("Id del producto: %d \n",p2.idproducto);
 printf("Nombre del producto: %s \n",p2.nombre);
 printf("Precio del producto: %.2f \n",p2.precio);
-printf("Stock del producto: %d \n",p2.stock);
+printf("Stock del producto: %d \n\n",p2.stock);
     }
 }
 
@@ -989,7 +989,7 @@ else{
 
         printf("\n");
    printf("Nombre del producto: %s \n",prod2.nombre);
-      printf("Precio del producto: %2f \n",prod2.precio);
+      printf("Precio del producto: %.2f \n",prod2.precio);
     printf("\n");
 
 printf("Cuanta cantidad desea adquirir de este producto? \n");
@@ -1002,6 +1002,11 @@ if (cant<=0){
 totalcant=totalcant+cant;
 //calcule el precio total de ese producto
 preciototalaux=preciototalaux+(prod2.precio*(float)cant);
+fseek(productos, -1*sizeof(prod2), SEEK_CUR);
+prod2.stock=prod2.stock + cant;
+prod2.stockmax=prod2.stock;
+fwrite(&prod2, sizeof(prod2),1,productos);
+
 
 cp2.idproducto=idp;
 cp2.preciocompra=prod2.precio;
@@ -1387,7 +1392,6 @@ int x;
 int aux;
 aux=0;
 int opcion;
-//if es administrador...//
 printf("Ingrese el ID de la fiesta que desea modificar: ");
 scanf("%d", &idf);
 rewind(fiestas);
@@ -1583,7 +1587,6 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     aux=0;
     char marca [21];
     strcpy(marca,"(FIESTA ELIMINADA)");
-    //if (EsAdministrador(u, usuarios)==1){
         printf("Ingrese el ID de la fiesta que desea dar de baja\n");
         SetColor(8);
         printf("(Puede ver el listado de fiestas para ver el ID):\n");
@@ -1627,8 +1630,6 @@ void BajaFiesta(struct usuario u, struct fiesta f, FILE *fiestas, FILE *usuarios
     	printf("La fiesta todavia sigue activa \n");
     	SetColor(15);
     }}
-    //else printf("Usted no posee los permisos suficientes para llevar acabo esta accion \n");
-    //}
 
 int fiestaActiva(struct fecha actual,int idf,FILE *fiestas){
     struct fiesta fie;
