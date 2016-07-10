@@ -509,14 +509,20 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
                     printf(" 3.- Modificar Producto\n");
                     printf(" 4.- Dar de Baja Producto\n");
                     printf(" 5.- Ver detalle de un producto\n");
-                    printf(" 0.- Salir\n");
+                    printf(" 6.- Listado de Productos Faltantes\n");
+                    printf(" 0.- Salir\n\n");
                     scanf("%d", &opcion4);
                     switch(opcion4){
-            case 5:
-                productos=fopen("productos","rb");
-                verdetalle(productos);
-                fclose(productos);
-                break;
+                case 6:
+                    productos = fopen("productos", "rb");
+                    ListadoProductosFaltantes(productos);
+                    fclose(productos);
+                    break;
+                case 5:
+                    productos=fopen("productos","rb");
+                    verdetalle(productos);
+                    fclose(productos);
+                    break;
                 case 0:
                     break;
                 case 1:
@@ -750,6 +756,7 @@ void verdetalle(FILE *productos);
 void StockMinimo(struct producto p, FILE *productos);
 void mostrarVentas(struct venta v);
 void ListadoVentas(struct venta v, FILE *ventas);
+void ListadoProductosFaltantes(FILE *productos);
 
 
 void verdetalle(FILE *productos){
@@ -2267,3 +2274,30 @@ void mostrarVentas(struct venta v){
     printf("Vendedor: %s\n\n", v.mail);
 }
 
+void ListadoProductosFaltantes(FILE *productos){
+    struct producto p;
+    int aux;
+    aux=0;
+    SetColor(2);
+    printf("                       Listado de productos faltantes         \n");
+    SetColor(3);
+    printf("_____________________________________________________________________________\n\n\n");
+    SetColor(15);
+    rewind(productos);
+    fread(&p, sizeof(struct producto),1,productos);
+    while(!feof(productos)){
+        if(p.stock<=0){
+            printf("ID del producto: %d\n", p.idproducto);
+            printf("Nombre: %s\n", p.nombre);
+            printf("Precio: %.2f\n", p.precio);
+            printf("Stock: %d\n\n\n",p.stock);
+            aux=1;
+        }
+        fread(&p, sizeof(struct producto),1,productos);
+    }
+    if(aux==0){
+        SetColor(7);
+        printf("No hay ningun producto con stock faltante.\n\n\n");
+        SetColor(15);
+    }
+}
