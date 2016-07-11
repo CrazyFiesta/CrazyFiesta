@@ -1044,6 +1044,7 @@ return;
     SetColor(15);
 }
 else {
+rewind(fiestas);
 if (fiestaActiva(actual, idf, fiestas)==1){
 while (y==1){
   first=first+1;
