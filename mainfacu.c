@@ -650,6 +650,7 @@ int main(int argc,char* argv[])
                  printf(" 1.- Listar una venta\n");
                  printf(" 2.- Listar de ventas entre fechas\n");
                  printf(" 3.- Listado de usuarios ordenado por cantidad de ventas en una fiesta\n");
+                 printf(" 4.- Listado de todos los usuarios que realizaron ventas ordenados por cantidad de ventas\n");
                  printf(" 0.- Salir\n");
                  scanf("%d", &opcion6);
                  switch(opcion6){
@@ -671,10 +672,15 @@ int main(int argc,char* argv[])
                     fiestas = fopen("fiestas", "rb+");
                     usuarioFiesta = fopen("usuarioFiesta", "rb+");
                     usuarios = fopen("usuarios", "rb+");
-                    void ListadoCantidadDeventasEnUnaFiesta(fiestas,usuarios,usuarioFiesta);
+                    ListadoCantidadDeventasEnUnaFiesta(fiestas,usuarios,usuarioFiesta);
                     fclose(fiestas);
                     fclose(usuarios);
                     fclose(usuarioFiesta);
+                    break;
+                 case 4:
+                    usuarios = fopen("usuarios", "rb+");
+                    ListadoGeneralOrdenado(usuarios);
+                    fclose(usuarios);
                     break;
     }
     }
@@ -797,6 +803,65 @@ void ListadoVentas(struct venta v, FILE *ventas);
 void ListadoProductosFaltantes(FILE *productos);
 void ListadoEntreFechas(FILE *ventas, FILE *fiestas);
 void ListadoCantidadDeventasEnUnaFiesta(FILE *fiestas, FILE *usuarios, FILE *usuarioFiesta);
+void ListadoGeneralOrdenado(FILE *usuarios);
+
+
+void ListadoGeneralOrdenado(FILE *usuarios){
+    int c,j,i;
+    c=0;
+    struct usuario array[1000];
+    struct usuario u,temp;
+    fread(&u, sizeof(struct usuario),1,usuarios);
+    while (!feof(usuarios)){
+        if (strcmp(u.tipousuario,"vendedor")==0){
+                strcpy(array[c].mail,u.mail);
+                array[c].dni= u.dni;
+                strcpy(array[c].contrasena,u.contrasena);
+                strcpy(array[c].nombre,u.nombre);
+                strcpy(array[c].apellido,u.apellido);
+                strcpy(array[c].tipousuario,u.tipousuario);
+                array[c].cantventas= u.cantventas;
+                c=c+1;
+                    }
+        fread(&u, sizeof(struct usuario),1,usuarios);
+                }
+        for (i = 0; i < (c - 1); i++) {
+            for (j = i + 1; j < c; j++) {
+            if (array[j].cantventas > array[i].cantventas)
+      {
+        strcpy(temp.mail,array[j].mail);
+        temp.dni= array[j].dni;
+        strcpy(temp.contrasena,array[j].contrasena);
+        strcpy(temp.nombre,array[j].nombre);
+        strcpy(temp.apellido,array[j].apellido);
+        strcpy(temp.tipousuario,array[j].tipousuario);
+        temp.cantventas= array[j].cantventas;
+        //copiando lo de i en J
+        strcpy(array[j].mail,array[i].mail);
+        array[j].dni= array[i].dni;
+        strcpy(array[j].contrasena,array[i].contrasena);
+        strcpy(array[j].nombre,array[i].nombre);
+        strcpy(array[j].apellido,array[i].apellido);
+        strcpy(array[j].tipousuario,array[i].tipousuario);
+        array[j].cantventas= array[i].cantventas;
+        // copiando lo de temp en i
+        strcpy(array[i].mail,temp.mail);
+        array[i].dni= temp.dni;
+        strcpy(array[i].contrasena,temp.contrasena);
+        strcpy(array[i].nombre,temp.nombre);
+        strcpy(array[i].apellido, temp.apellido);
+        strcpy(array[i].tipousuario,temp.tipousuario);
+        array[i].cantventas= temp.cantventas;
+      }
+    }
+  }
+
+  for (i = 0; i < c; i++) {
+    printf("vendedor: %s\n", array[i].mail);
+    printf("cantidad de ventas: %d\n\n", array[i].cantventas);
+  }
+
+}
 
 
 void ListadoCantidadDeventasEnUnaFiesta(FILE *fiestas, FILE *usuarios, FILE *usuarioFiesta){
@@ -1080,17 +1145,25 @@ char segundos[10];
     SetColor(15);
 first=0;
 }
+    cambiarCantVent(usuarios,mail);
+    }
+
+void cambiarCantVent(FILE *usuarios,char mail[50]){
+    struct usuario usu;
     rewind(usuarios);
     fread(&usu,sizeof(struct usuario),1,usuarios);
     while (!feof(usuarios)){
         if (strcmp(usu.mail,mail)==0){
             fseek(usuarios, -1*sizeof(struct usuario), SEEK_CUR);
-            usu.cantventas= usu.cantventas + 1;
+            usu.cantventas = usu.cantventas + 1;
             fwrite(&usu, sizeof(struct usuario), 1, usuarios);
+            break;
         }
        fread(&usu,sizeof(struct usuario),1,usuarios);
     }
-    }
+}
+
+
 void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50]){
 struct compraproducto cp2;
 struct compra c2;
