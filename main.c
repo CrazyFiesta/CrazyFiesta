@@ -11,6 +11,7 @@ struct usuario{
 	char nombre[20];
 	char apellido[20];
 	char tipousuario[15];
+	int cantventas;
 	};
 
 struct proveedor{
@@ -111,7 +112,7 @@ int main(int argc,char* argv[])
     struct fiesta fie;
     struct usuariofiesta uf,uparty;
     struct producto prod;
-    int opcion, opcion2, opcion3, opcion4,opcion5;
+    int opcion, opcion2, opcion3, opcion4,opcion5,opcion6;
 
     char dia[15];
     char mes[15];
@@ -128,7 +129,6 @@ int main(int argc,char* argv[])
     fechaActual.mes = atoi(mes);
     fechaActual.year = atoi(year);
 
-
     /*strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
@@ -138,16 +138,15 @@ int main(int argc,char* argv[])
     f.fechafin.mes = 06;
     f.fechafin.year = 16;
     f.idfiesta= 1;
-   fiestas = fopen ("fiestas", "wb");
+    fiestas = fopen ("fiestas", "wb");
     fwrite(&f,sizeof(struct fiesta),1,fiestas);
     fclose (fiestas);
 
-//id actual de la venta creando
-IDactualVenta = fopen("idventa","wb");
-int contadordev=2;
-fwrite(&contadordev, sizeof(int),1,IDactualVenta);
+    //id actual de la venta creando
+    IDactualVenta = fopen("idventa","wb");
+    int contadordev=2;
+    fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     fclose(IDactualVenta);
-
 
     //id actual de la compra creando
     IDactualCompra = fopen("idcompra","wb");
@@ -160,11 +159,13 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     int contadordeID= 2;
     fwrite(&contadordeID,sizeof (int),1,IDactualFiesta);
     fclose(IDactualFiesta);
+
     //ID actual del producto creando
     IDactualProducto= fopen("idproductos", "wb");
     int contadordeID2= 2;
     fwrite(&contadordeID, sizeof(int),1,IDactualProducto);
     fclose(IDactualProducto);
+
     //Registro de producto
     prod.idproducto = 1;
     strcpy(prod.nombre, "Gaseosas");
@@ -190,7 +191,6 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     ventas = fopen("ventas", "wb");
     fwrite(&v, sizeof(struct venta),1,ventas);
     fclose(ventas);
-
     //venta producto
     pv.idproducto=1;
     pv.idventa=1;
@@ -222,6 +222,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     compraProducto = fopen("compraProducto", "wb");
     fwrite(&cp, sizeof(struct compraproducto),1,compraProducto);
     fclose(compraProducto);
+
     //Registro de proveedor
     p.cuil=27382916137;
     strcpy(p.nombreempresa,"Coca Cola");
@@ -236,9 +237,11 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     strcpy(u.tipousuario, "administrador");
     strcpy(u.contrasena, "juan");
     u.dni= 40254875;
+    u.cantventas=0;
     usuarios = fopen("usuarios","wb");
     fwrite(&u,sizeof(struct usuario),1,usuarios);
     fclose(usuarios);
+
    //registro de USUARIOFIESTA
     usuarioFiesta = fopen ("usuarioFiesta", "wb");
     uf.idfiesta=1;
@@ -248,6 +251,7 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
     fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fclose(usuarioFiesta);*/
+
     opcion= 4;
     opcion2=4;
     opcion3=4;
@@ -635,15 +639,54 @@ fwrite(&contadordev, sizeof(int),1,IDactualVenta);
 
     break;
                  case 6:
+                opcion6=4;
+                while(opcion6!=0){
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(2);
+                 printf("                         Ventas                                 \n");
+                 SetColor(3);
+                 printf("****************************************************************************\n");
+                 SetColor(15);
+                 printf(" 1.- Listar una venta\n");
+                 printf(" 2.- Listar de ventas entre fechas\n");
+                 printf(" 3.- Listado de usuarios ordenado por cantidad de ventas en una fiesta\n");
+                 printf(" 4.- Listado de todos los usuarios que realizaron ventas ordenados por cantidad de ventas\n");
+                 printf(" 0.- Salir\n");
+                 scanf("%d", &opcion6);
+                 switch(opcion6){
+                 case 0:
+                    break;
+                 case 1:
                     ventas = fopen("ventas", "rb+");
                     ListadoVentas(v, ventas);
                     fclose(ventas);
                     break;
-
+                 case 2:
+                    ventas = fopen("ventas", "rb+");
+                    fiestas = fopen("fiestas", "rb+");
+                    ListadoEntreFechas(ventas,fiestas);
+                    fclose(ventas);
+                    fclose(fiestas);
+                    break;
+                 case 3:
+                    fiestas = fopen("fiestas", "rb+");
+                    usuarioFiesta = fopen("usuarioFiesta", "rb+");
+                    usuarios = fopen("usuarios", "rb+");
+                    ListadoCantidadDeventasEnUnaFiesta(fiestas,usuarios,usuarioFiesta);
+                    fclose(fiestas);
+                    fclose(usuarios);
+                    fclose(usuarioFiesta);
+                    break;
+                 case 4:
+                    usuarios = fopen("usuarios", "rb+");
+                    ListadoGeneralOrdenado(usuarios);
+                    fclose(usuarios);
+                    break;
     }
     }
-
-    }
+}
+    }}
     else if ((strcmp(u.tipousuario,"vendedor")==0) || (strcmp(u.tipousuario,"Vendedor")==0)){
     opcion =4;
        while (opcion !=0){
@@ -703,10 +746,12 @@ case 3:
                  productoVenta = fopen("productoVenta","rb+");
                  fiestas = fopen ("fiestas","rb");
                  IDactualVenta = fopen("idventa","rb+");
-                 realizarventa(fiestas,ventas,productos,productoVenta,IDactualVenta,u.mail);
+                 usuarios = fopen("usuarios","rb+");
+                 realizarventa(fiestas,ventas,productos,productoVenta,IDactualVenta,u.mail,usuarios, fechaActual);
                  fclose(ventas);
                  fclose(IDactualVenta);
                  fclose(productos);
+                 fclose(usuarios);
                  fclose(productoVenta);
                  fclose(fiestas);
                     break;
@@ -751,14 +796,198 @@ void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 float esNumero();
 void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char[50]);
-void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50]);
+void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50],FILE *usuarios, struct fecha);
 void verdetalle(FILE *productos);
 void StockMinimo(struct producto p, FILE *productos);
 void mostrarVentas(struct venta v);
 void ListadoVentas(struct venta v, FILE *ventas);
 void ListadoProductosFaltantes(FILE *productos);
+void ListadoEntreFechas(FILE *ventas, FILE *fiestas);
+void ListadoCantidadDeventasEnUnaFiesta(FILE *fiestas, FILE *usuarios, FILE *usuarioFiesta);
+void ListadoGeneralOrdenado(FILE *usuarios);
 
 
+void ListadoGeneralOrdenado(FILE *usuarios){
+    int c,j,i;
+    c=0;
+    struct usuario array[1000];
+    struct usuario u,temp;
+    fread(&u, sizeof(struct usuario),1,usuarios);
+    while (!feof(usuarios)){
+        if (strcmp(u.tipousuario,"vendedor")==0){
+                strcpy(array[c].mail,u.mail);
+                array[c].dni= u.dni;
+                strcpy(array[c].contrasena,u.contrasena);
+                strcpy(array[c].nombre,u.nombre);
+                strcpy(array[c].apellido,u.apellido);
+                strcpy(array[c].tipousuario,u.tipousuario);
+                array[c].cantventas= u.cantventas;
+                c=c+1;
+                    }
+        fread(&u, sizeof(struct usuario),1,usuarios);
+                }
+        for (i = 0; i < (c - 1); i++) {
+            for (j = i + 1; j < c; j++) {
+            if (array[j].cantventas > array[i].cantventas)
+      {
+        strcpy(temp.mail,array[j].mail);
+        temp.dni= array[j].dni;
+        strcpy(temp.contrasena,array[j].contrasena);
+        strcpy(temp.nombre,array[j].nombre);
+        strcpy(temp.apellido,array[j].apellido);
+        strcpy(temp.tipousuario,array[j].tipousuario);
+        temp.cantventas= array[j].cantventas;
+        //copiando lo de i en J
+        strcpy(array[j].mail,array[i].mail);
+        array[j].dni= array[i].dni;
+        strcpy(array[j].contrasena,array[i].contrasena);
+        strcpy(array[j].nombre,array[i].nombre);
+        strcpy(array[j].apellido,array[i].apellido);
+        strcpy(array[j].tipousuario,array[i].tipousuario);
+        array[j].cantventas= array[i].cantventas;
+        // copiando lo de temp en i
+        strcpy(array[i].mail,temp.mail);
+        array[i].dni= temp.dni;
+        strcpy(array[i].contrasena,temp.contrasena);
+        strcpy(array[i].nombre,temp.nombre);
+        strcpy(array[i].apellido, temp.apellido);
+        strcpy(array[i].tipousuario,temp.tipousuario);
+        array[i].cantventas= temp.cantventas;
+      }
+    }
+  }
+
+  for (i = 0; i < c; i++) {
+    printf("vendedor: %s\n", array[i].mail);
+    printf("cantidad de ventas: %d\n\n", array[i].cantventas);
+  }
+
+}
+
+
+void ListadoCantidadDeventasEnUnaFiesta(FILE *fiestas, FILE *usuarios, FILE *usuarioFiesta){
+    struct fiesta f2;
+    struct venta v;
+    struct usuario array[1000];
+    struct usuariofiesta uf;
+    struct usuario u,temp;
+    int idf, exisf,c,i,j;
+    c=0;
+    exisf=0;
+    printf("Ingrese el codigo de la Fiesta en la que quiere el listado:\n");
+    scanf("%d",&idf);
+    fread(&f2, sizeof(struct fiesta),1, fiestas);
+    while(!feof(fiestas)){
+        if(f2.idfiesta==idf){
+            exisf=1;
+        }
+        fread(&f2, sizeof(struct fiesta),1, fiestas);
+        }
+    if (exisf==0){
+        SetColor(4);
+        printf("La fiesta ingresada no existe\n");
+        return;
+        SetColor(15);
+        }
+    else{
+        fread(&uf, sizeof(struct usuariofiesta),1,usuarioFiesta);
+        while(!feof(usuarioFiesta)){
+            if (uf.idfiesta== idf){
+                rewind(usuarios);
+                fread(&u, sizeof(struct usuario),1,usuarios);
+                while (!feof(usuarios)){
+                    if (strcmp(uf.mail,u.mail)==0 && strcmp(u.tipousuario,"vendedor")==0){
+                            strcpy(array[c].mail,u.mail);
+                            array[c].dni= u.dni;
+                            strcpy(array[c].contrasena,u.contrasena);
+                            strcpy(array[c].nombre,u.nombre);
+                            strcpy(array[c].apellido,u.apellido);
+                            strcpy(array[c].tipousuario,u.tipousuario);
+                            array[c].cantventas= u.cantventas;
+                            c=c+1;
+                    }
+                    fread(&u, sizeof(struct usuario),1,usuarios);
+                }
+            }
+            fread(&uf, sizeof(struct usuariofiesta),1,usuarioFiesta);
+        }
+
+        for (i = 0; i < (c - 1); i++) {
+            for (j = i + 1; j < c; j++) {
+            if (array[j].cantventas > array[i].cantventas)
+      {
+        strcpy(temp.mail,array[j].mail);
+        temp.dni= array[j].dni;
+        strcpy(temp.contrasena,array[j].contrasena);
+        strcpy(temp.nombre,array[j].nombre);
+        strcpy(temp.apellido,array[j].apellido);
+        strcpy(temp.tipousuario,array[j].tipousuario);
+        temp.cantventas= array[j].cantventas;
+        //copiando lo de i en J
+        strcpy(array[j].mail,array[i].mail);
+        array[j].dni= array[i].dni;
+        strcpy(array[j].contrasena,array[i].contrasena);
+        strcpy(array[j].nombre,array[i].nombre);
+        strcpy(array[j].apellido,array[i].apellido);
+        strcpy(array[j].tipousuario,array[i].tipousuario);
+        array[j].cantventas= array[i].cantventas;
+        // copiando lo de temp en i
+        strcpy(array[i].mail,temp.mail);
+        array[i].dni= temp.dni;
+        strcpy(array[i].contrasena,temp.contrasena);
+        strcpy(array[i].nombre,temp.nombre);
+        strcpy(array[i].apellido, temp.apellido);
+        strcpy(array[i].tipousuario,temp.tipousuario);
+        array[i].cantventas= temp.cantventas;
+      }
+    }
+  }
+
+  for (i = 0; i < c; i++) {
+    printf("vendedor: %s\n", array[i].mail);
+    printf("cantidad de ventas: %d\n\n", array[i].cantventas);
+  }
+    }
+}
+
+
+
+void ListadoEntreFechas(FILE *ventas, FILE *fiestas){
+    struct fecha fecha1,fecha2;
+    struct fiesta f2;
+    struct venta v;
+    int idf, exisf;
+    exisf=0;
+    printf("Ingrese el codigo de la Fiesta en la que quiere el listado:\n");
+    scanf("%d",&idf);
+    fread(&f2, sizeof(struct fiesta),1, fiestas);
+    while(!feof(fiestas)){
+        if(f2.idfiesta==idf){
+            exisf=1;
+        }
+        fread(&f2, sizeof(struct fiesta),1, fiestas);
+        }
+    if (exisf==0){
+        SetColor(4);
+        printf("La fiesta ingresada no existe\n");
+        return;
+        SetColor(15);
+}
+   else{
+        printf("Ingrese el primer intervalo de la fiesta que quiere listar las ventas en formato dd/mm/aa: ");
+        scanf ("%d/%d/%d",&fecha1.dia, &fecha1.mes,&fecha1.year);
+         printf("Ingrese el segundo intervalo de la fiesta que quiere listar las ventas en formato dd/mm/aa: ");
+        scanf ("%d/%d/%d",&
+            fecha2.dia, &fecha2.mes,&fecha2.year);
+        fread(&v, sizeof(struct venta), 1, ventas);
+        while (!feof(ventas)){
+                if (idf== v.idfiesta && v.fechaventa.dia>= fecha1.dia && v.fechaventa.dia<=fecha2.dia && fecha1.year==v.fechaventa.year && v.fechaventa.mes>= fecha1.mes && v.fechaventa.mes<=fecha2.mes){
+                   mostrarVentas(v);
+                }
+                fread(&v, sizeof(struct venta), 1, ventas);
+        }
+   }
+}
 void verdetalle(FILE *productos){
 int idp,exisp=0;
 struct producto p2;
@@ -789,8 +1018,9 @@ printf("Stock del producto: %d \n\n",p2.stock);
 
 
 
-void realizarventa(FILE *fiestas,FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char mail[50]){
+void realizarventa(FILE *fiestas,FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char mail[50],FILE *usuarios, struct fecha actual){
 struct fiesta f2;
+struct usuario usu;
 struct usuariofiesta uf2;
 float precioventaaux,preciototalaux=0;
 struct venta v2;
@@ -814,7 +1044,7 @@ return;
     SetColor(15);
 }
 else {
-
+if (fiestaActiva(actual, idf, fiestas)==1){
 while (y==1){
   first=first+1;
   fflush(stdin);
@@ -909,14 +1139,38 @@ char segundos[10];
  v2.preciototal=preciototalaux;
  v2.idventa=con;
 
- fseek(ventas, 0, SEEK_END);
+    fseek(ventas, 0, SEEK_END);
     fwrite(&v2, sizeof(struct venta),1, ventas);
     SetColor(2);
     printf("La compra se ha registrado correctamente.\n");
     SetColor(15);
 first=0;
 }
+else{
+    SetColor(4);
+    printf("La fiesta no se encuentra activa.\n\n");
+    SetColor(15);
+    return;
+}
+    cambiarCantVent(usuarios,mail);
+    }}
+
+void cambiarCantVent(FILE *usuarios,char mail[50]){
+    struct usuario usu;
+    rewind(usuarios);
+    fread(&usu,sizeof(struct usuario),1,usuarios);
+    while (!feof(usuarios)){
+        if (strcmp(usu.mail,mail)==0){
+            fseek(usuarios, -1*sizeof(struct usuario), SEEK_CUR);
+            usu.cantventas = usu.cantventas + 1;
+            fwrite(&usu, sizeof(struct usuario), 1, usuarios);
+            break;
+        }
+       fread(&usu,sizeof(struct usuario),1,usuarios);
     }
+}
+
+
 void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50]){
 struct compraproducto cp2;
 struct compra c2;
@@ -1819,6 +2073,7 @@ void registrarUsuario(struct usuario u, FILE *usuarios,FILE *usuarioFiesta,FILE 
             scanf("%s", &usu.apellido);
             printf("ingrese tipousuario: 'administrador' o 'vendedor': ");
             scanf("%s", &usu.tipousuario);
+            usu.cantventas = 0;
              if (verificartuc(usu.tipousuario)==1){
 
             uf.idfiesta= idf;
@@ -1949,7 +2204,7 @@ void cambiarContrasena(struct usuario u, FILE *usuarios){
     fread(&usu,sizeof(struct usuario),1,usuarios);
     while (!feof(usuarios)){
         if (strcmp(usu.mail,u.mail)==0){
-            fseek(usuarios,-128,SEEK_CUR);
+            fseek(usuarios, -1*sizeof(struct usuario), SEEK_CUR);
             fwrite(&u, sizeof(struct usuario), 1, usuarios);
             printf ("Esta es la contraseña nueva: %s\n", u.contrasena);
             break;
