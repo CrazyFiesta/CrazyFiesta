@@ -795,7 +795,7 @@ void BajaProducto(struct producto p, FILE *productos);
 void listadoGeneralFiesta(FILE *fiestas);
 int mismoNombre (FILE *fiestas,struct fiesta fie,struct fecha actual);
 float esNumero();
-void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char[50]);
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char[50],int);
 void realizarventa(FILE *fiestas, FILE *ventas, FILE *productos, FILE *productoVenta, FILE *IDactualVenta,char [50],FILE *usuarios, struct fecha);
 void verdetalle(FILE *productos);
 void StockMinimo(struct producto p, FILE *productos);
@@ -1204,37 +1204,23 @@ void cambiarCantVent(FILE *usuarios,char mail[50]){
 }
 
 
-void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50]){
+void realizarcompra(FILE *compras,FILE *compraProducto,FILE *productos,FILE *fiestas,FILE *proveedores,FILE *IDactualCompra,char mail[50],int idf){
 struct compraproducto cp2;
 struct compra c2;
 struct fiesta f2;
 struct producto prod2;
 struct usuariofiesta uf2;
 struct proveedor prov2;
-int y=1,idf,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con,first=0;
+int y=1,exisf=0,idp,exisprod,exisu=0,sum=0,existprov=0,con,first=0,c,a=0,i;
 long long int cuil,aux;
-float preciototalaux=0;
-int cant,totalcant=0;
-rewind(IDactualCompra);
-fflush(stdin);
-printf("Ingrese el id de la fiesta para la que quiere adquirir productos: \n");
-scanf("%d",&idf);
-fread(&f2, sizeof(struct fiesta),1, fiestas);
-while(!feof(fiestas)){
-    if(f2.idfiesta==idf){
-            exisf=1;
-    }
-    fread(&f2, sizeof(struct fiesta),1, fiestas);
-    }
-if (exisf==0){
-    SetColor(4);
-    printf("La fiesta ingresada no existe\n");
-    return;
-    SetColor(15);
-}
-else {
-        fflush(stdin);
+struct compraproducto array[1000];
 
+float preciototalaux=0,preciototalauxaux=0;
+int cant,totalcant=0,totalcantaux=0;
+rewind(IDactualCompra);
+
+        fflush(stdin);
+printf("\n");
         printf("Ingrese el cuil del proveedor al cuil le realizo la compra:\n");
         printf("(Ingrese solo numeros, sin el signo '-':\n");
 scanf("%lld",&cuil);
@@ -1290,42 +1276,67 @@ printf("Cuanta cantidad desea adquirir de este producto? \n");
 scanf("%d",&cant);
 if (cant<=0){
     printf("La cantidad ingresada es incorrecta\n");
+
+return;
 }
 
 //voy sumando la cantidad de mercaderia comprada
 totalcant=totalcant+cant;
 //calcule el precio total de ese producto
 preciototalaux=preciototalaux+(prod2.precio*(float)cant);
-fseek(productos, -1*sizeof(prod2), SEEK_CUR);
+
+
+printf("\n");
+printf("El total por la cantidad de %d de este producto es de: %f \n", cant,((float)cant*prod2.precio));
+printf("El precio precio total de la compra es de: %f \n",preciototalaux);
+printf("\n");
+fflush(stdout);
+printf("Esta seguro que quiere agregar el producto a la venta? Presione 1 para confirmar y cualquier otro numero para cancelar \n");
+printf("\n");
+scanf("%d",&c);
+if (c!=1){
+
+    if (first==1){
+        fread(&con,sizeof(int),1,IDactualCompra);
+con= con+1;
+fseek(IDactualCompra, -1*sizeof(int), SEEK_CUR);
+   fwrite(&con, sizeof(int), 1, IDactualCompra);
+    }
+}
+if (c==1) {
+    fseek(productos, -1*sizeof(prod2), SEEK_CUR);
 prod2.stock=prod2.stock + cant;
 prod2.stockmax=prod2.stock;
 fwrite(&prod2, sizeof(prod2),1,productos);
-
-
-cp2.idproducto=idp;
-cp2.preciocompra=prod2.precio;
+preciototalauxaux=preciototalauxaux+(prod2.precio*(float)cant);
+    totalcantaux=totalcantaux+cant;
 
 //si es el primer producto perteneciente a la compra aumento el id
 if (first==1){
-        fread(&con,sizeof(int),1,IDactualCompra);
-
-        con= con+1;
-        fseek(IDactualCompra,-1*sizeof(int),SEEK_CUR);
-        fwrite(&con,sizeof (int),1,IDactualCompra);
+   fread(&con,sizeof(int),1,IDactualCompra);
+con= con+1;
+fseek(IDactualCompra, -1*sizeof(int), SEEK_CUR);
+   fwrite(&con, sizeof(int), 1, IDactualCompra);
 }
 //si no es el primer producto perteneciente a la compra mantengo el id
-else if (first>1){
-    fread(&con,sizeof(int),1,IDactualCompra);
-}
-    cp2.idcompra=con;
 
+array[a].idcompra=con;
+array[a].idproducto=prod2.idproducto;
+array[a].preciocompra=prod2.precio;
 
-fseek(compraProducto, 0, SEEK_END);
-    fwrite(&cp2, sizeof(struct compraproducto),1, compraProducto);
-
+a++;
+ }
+ printf("\n");
 printf("Quiere adquirir otro producto? Si su respuesta es si, presione 1, sino presione cualquier otro numero \n");
 scanf("%d",&y);
 }}}
+fflush(stdout);
+printf("\n");
+printf("Esta seguro que desea realizar esta compra? Presione 1 para confirmar o presione cualquier otro numero para cancelar la venta \n");
+scanf("%d",&c);
+
+
+if (c==1){
 time_t tiempo = time(0);
 struct tm *tlocal = localtime(&tiempo);
 char dia[10];
@@ -1347,12 +1358,12 @@ c2.horacompra.hora=atoi(hora);
 c2.horacompra.minutos=atoi(minutos);
 c2.horacompra.segundos=atoi(segundos);
 
-c2.cantidad=totalcant;
+c2.cantidad=totalcantaux;
 c2.cuil=cuil;
 c2.idcompra=con;
 c2.idfiesta=idf;
 strcpy(c2.mail,mail);
-c2.preciototal=preciototalaux;
+c2.preciototal=preciototalauxaux;
 
 fseek(compras, 0, SEEK_END);
     fwrite(&c2, sizeof(struct compra),1, compras);
@@ -1361,6 +1372,13 @@ fseek(compras, 0, SEEK_END);
     printf("La compra se ha registrado correctamente.\n");
     first=0;
     SetColor(15);
+    fseek(compraProducto, 0, SEEK_END);
+
+for (i=0;i<a;i++){
+fwrite(&array[i], sizeof(struct compraproducto),1, compraProducto);
+}
+}
+else return;
 }
 else {
     SetColor(4);
@@ -1369,7 +1387,7 @@ else {
 SetColor(15);
 return;
 }
-}
+
 }
 
 
