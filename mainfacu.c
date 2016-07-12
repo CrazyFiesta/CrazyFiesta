@@ -840,10 +840,15 @@ void ListadoGeneralOrdenado(FILE *usuarios){
       }
     }
   }
+printf("                Listado de usuarios ordenados por cantidad ventas que realizaron              \n");
+                    SetColor(3);
+
+printf("________________________________________________________________________________\n");
 
   for (i = 0; i < c; i++) {
     printf("vendedor: %s\n", array[i].mail);
-    printf("cantidad de ventas: %d\n\n", array[i].cantventas);
+    printf("cantidad de ventas: %d\n", array[i].cantventas);
+    printf("________________________________________________________________________________\n");
   }
 
 }
@@ -927,9 +932,13 @@ void ListadoCantidadDeventasEnUnaFiesta(FILE *fiestas, FILE *usuarios, FILE *usu
     }
   }
 
+printf("                Listado de usuarios ordenados por cantidad de ventas de una fiesta              \n");
+                    SetColor(3);
+
   for (i = 0; i < c; i++) {
     printf("vendedor: %s\n", array[i].mail);
-    printf("cantidad de ventas: %d\n\n", array[i].cantventas);
+    printf("cantidad de ventas: %d\n", array[i].cantventas);
+    printf("________________________________________________________________________________\n");
   }
     }
 }
@@ -963,10 +972,13 @@ void ListadoEntreFechas(FILE *ventas, FILE *fiestas){
          printf("Ingrese el segundo intervalo de la fiesta que quiere listar las ventas en formato dd/mm/aa: ");
         scanf ("%d/%d/%d",&
             fecha2.dia, &fecha2.mes,&fecha2.year);
+        printf("                Listado de usuarios ordenados por cantidad ventas que realizaron              \n");
+                    SetColor(3);
         fread(&v, sizeof(struct venta), 1, ventas);
         while (!feof(ventas)){
                 if (idf== v.idfiesta && v.fechaventa.dia>= fecha1.dia && v.fechaventa.dia<=fecha2.dia && fecha1.year==v.fechaventa.year && v.fechaventa.mes>= fecha1.mes && v.fechaventa.mes<=fecha2.mes){
                    mostrarVentas(v);
+                   printf("________________________________________________________________________________\n");
                 }
                 fread(&v, sizeof(struct venta), 1, ventas);
         }
@@ -1150,7 +1162,7 @@ char segundos[10];
     fseek(ventas, 0, SEEK_END);
     fwrite(&v2, sizeof(struct venta),1, ventas);
     SetColor(2);
-    printf("La compra se ha registrado correctamente.\n");
+    printf("La venta se ha registrado correctamente.\n");
     SetColor(15);
 first=0;
 
@@ -1272,7 +1284,7 @@ printf("El total por la cantidad de %d de este producto es de: %f \n", cant,(pro
 printf("El precio precio total de la compra es de: %f \n",preciototalaux);
 printf("\n");
 fflush(stdout);
-printf("Esta seguro que quiere agregar el producto a la venta? Presione 1 para confirmar y cualquier otro numero para cancelar \n");
+printf("Esta seguro que quiere agregar el producto a la compra? Presione 1 para confirmar y cualquier otro numero para cancelar \n");
 scanf("%d",&c);
 printf("\n");
 if (c!=1){
@@ -1313,7 +1325,7 @@ scanf("%d",&y);
 }}}
 fflush(stdout);
 printf("\n");
-printf("Esta seguro que desea realizar esta compra? Presione 1 para confirmar o presione cualquier otro numero para cancelar la venta \n");
+printf("Esta seguro que desea realizar esta compra? Presione 1 para confirmar o presione cualquier otro numero para cancelar la compra \n");
 scanf("%d",&c);
 printf("\n");
 
