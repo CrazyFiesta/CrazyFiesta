@@ -1009,6 +1009,7 @@ struct venta v2;
 struct producto prod2;
 struct productoventa pv2;
 int exisf=0,y=1,exisu=0,idp,exisprod=0,cant,totalcant=0,con,first=0,c,a=0,i,totalcantaux=0;
+int stockaux;
 struct productoventa array[1000];
 printf("\n");
 
@@ -1072,7 +1073,7 @@ fseek(IDactualVenta, -1*sizeof(int), SEEK_CUR);
 
 if (c==1) {
          fseek(productos, -1*sizeof(prod2), SEEK_CUR);
-int stockaux=prod2.stock - cant;
+         stockaux=prod2.stock - cant;
 if (stockaux<=0){
     printf("\n");
     printf("No hay stock suficiente del producto \n");
