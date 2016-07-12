@@ -621,7 +621,7 @@ int main(int argc,char* argv[])
                     fiestas = fopen("fiestas","rb");
                     proveedores=fopen("proveedores","rb");
                     IDactualCompra=fopen("idcompra","rb+");
-                    realizarcompra(compras,compraProducto,productos,fiestas,proveedores,IDactualCompra,u.mail);
+                    realizarcompra(compras,compraProducto,productos,fiestas,proveedores,IDactualCompra,u.mail,mail);
 
                     fclose(compras);
                     fclose(productos);
