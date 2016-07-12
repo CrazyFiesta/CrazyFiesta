@@ -1071,7 +1071,13 @@ fseek(IDactualVenta, -1*sizeof(int), SEEK_CUR);
 }
 
 if (c==1) {
-        fseek(productos, -1*sizeof(prod2), SEEK_CUR);
+         fseek(productos, -1*sizeof(prod2), SEEK_CUR);
+stockaux=prod2.stock - cant;
+if (stockaux<=0){
+    printf("\n");
+    printf("No hay stock suficiente del producto \n");
+    return;
+}
 prod2.stock=prod2.stock - cant;
 fwrite(&prod2, sizeof(prod2),1,productos);
 totalcantaux=totalcantaux+cant;
