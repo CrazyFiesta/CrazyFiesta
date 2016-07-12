@@ -1816,8 +1816,8 @@ fflush(stdin);
 
 fread(&us,sizeof(struct usuario),1,usuarios);
 while (!feof(usuarios)){
-    if ((strcmp(us.mail,mail))==0){
-        if ((strcmp(us.tipousuario,aux))==0){
+    if (strcmp(us.mail,mail)==0){
+        if (strcmp(us.tipousuario,aux)==0){
          esven = 1;
         }
     }
@@ -1852,8 +1852,8 @@ else {
                    printf("La baja de usuario se ha realizado correctamente \n");
                    break;
               }
-                fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
               }
+               fread(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
 
     }
 
