@@ -128,7 +128,7 @@ int main(int argc,char* argv[])
     fechaActual.dia = atoi(dia);
     fechaActual.mes = atoi(mes);
     fechaActual.year = atoi(year);
-/*
+
     strcpy(f.descripcion, "fiesta del trigo");
     strcpy(f.nombre, "fiesta del trigo");
     f.fechainicio.dia = 18;
@@ -241,7 +241,7 @@ int main(int argc,char* argv[])
     strcpy(uparty.mail,u.mail);
     fwrite(&uf,sizeof(struct usuariofiesta),1,usuarioFiesta);
     fwrite(&uparty,sizeof(struct usuariofiesta),1,usuarioFiesta);
-    fclose(usuarioFiesta); */
+    fclose(usuarioFiesta);
 
     opcion= 4;
     opcion2=4;
@@ -1072,7 +1072,7 @@ fseek(IDactualVenta, -1*sizeof(int), SEEK_CUR);
 
 if (c==1) {
          fseek(productos, -1*sizeof(prod2), SEEK_CUR);
-stockaux=prod2.stock - cant;
+int stockaux=prod2.stock - cant;
 if (stockaux<=0){
     printf("\n");
     printf("No hay stock suficiente del producto \n");
@@ -1455,6 +1455,11 @@ while (!feof(proveedores)){
     fread(&p3,sizeof(struct proveedor),1,proveedores);
 }
 
+if (cuilUsado==0){
+        printf("El cuil ingresado no se encuentra registrado en el sistema \n");
+    return;
+}
+cuilUsado=0;
 rewind(proveedores);
 fread(&p3,sizeof(struct proveedor),1,proveedores);
 while(!feof(proveedores)){
@@ -1501,7 +1506,19 @@ while(!feof(proveedores)){
                sum = sum + 1;
                }
                if (sum==11){
-                    if (cuilUsado==0){
+                    rewind(proveedores);
+                    fread(&p3,sizeof(struct proveedor),1,proveedores);
+                    while (!feof(proveedores)){
+                            if (caux2==p3.cuil){
+                            cuilUsado=1;
+                            }
+                 fread(&p3,sizeof(struct proveedor),1,proveedores);
+                     }
+if (cuilUsado==1){
+        printf("El nuevo cuil ingresado ya se encuentra en uso \n");
+    return;
+}
+else if (cuilUsado ==0) {
                 p3.cuil=caux2;
                fseek(proveedores, -1*sizeof(struct proveedor), SEEK_CUR);
                fwrite(&p3, sizeof(struct proveedor),1,proveedores);
@@ -1509,11 +1526,8 @@ while(!feof(proveedores)){
                 printf("La modificacion del cuil se ha realizado correctamente.\n");
                 SetColor(15);
                 break;
-                }else {
-                    printf("El cuil que ingreso esta en uso\n");
-                    break;
                 }
-                }
+               }
                else {
                     SetColor(4);
                     printf("El cuil ingresado no tiene 11 digitos \n");
